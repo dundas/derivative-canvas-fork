@@ -454,5 +454,6 @@ export const embeddableURLValidator = (
     }
   }
 
-  return !!matchHostname(url, ALLOWED_DOMAINS);
+  // Disabled whitelist restriction - allow all URLs
+  return true;
 };
