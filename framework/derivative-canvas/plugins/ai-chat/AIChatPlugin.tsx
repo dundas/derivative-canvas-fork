@@ -32,10 +32,10 @@ export const AIChatPlugin: ExcalidrawPlugin = {
     model: 'gpt-4',
     systemPrompt: 'You are an AI assistant helping with canvas design and drawing. Provide helpful suggestions and answer questions about the drawing.',
   },
-};
+}
 
 // AI Chat Sidebar Component
-const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
+function AIChatSidebar({ context, plugin }: PluginUIProps) {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +43,7 @@ const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMessage = { role: 'user' as const, content: input };
+    const userMessage = { role: 'user' as const, content: input }
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -128,7 +128,7 @@ const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
 };
 
 // AI Chat Toolbar Button
-const AIChatButton: React.FC<PluginUIProps> = ({ context }) => {
+function AIChatButton({ context }: PluginUIProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -150,7 +150,7 @@ const AIChatButton: React.FC<PluginUIProps> = ({ context }) => {
 };
 
 // AI Chat Dialog (for full-screen chat)
-const AIChatDialog: React.FC<PluginUIProps> = ({ context, plugin }) => {
+function AIChatDialog({ context, plugin }: PluginUIProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!isOpen) return null;

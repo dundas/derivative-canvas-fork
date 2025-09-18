@@ -1,0 +1,94 @@
+---
+id: overview
+title: Derivative Canvas Framework
+sidebar_label: Overview
+---
+
+The Derivative Canvas framework provides a standardized way to integrate an AI-enhanced, canvas-first experience into your application.
+
+It wraps `@excalidraw/excalidraw` behind clean interfaces, adds a plugin system, and supplies adapters for authentication and storage.
+
+## Location and Structure
+
+This repository currently follows the "Option 2: Clean Separation Within Fork" structure.
+
+- Framework code lives at `framework/derivative-canvas/`
+- Excalidraw packages live under `packages/`
+- Examples live under `examples/`
+
+High-level layout for the framework:
+
+```
+framework/derivative-canvas/
+├── core/                 # Provider, PluginManager, types
+├── layouts/              # Canvas, hybrid, minimal layouts
+├── plugins/              # Example plugins (e.g., AI chat)
+└── utils/                # Auth/storage adapters
+```
+
+## Install
+
+Install the framework and Excalidraw in your app:
+
+```bash
+npm install @derivative-canvas/core @excalidraw/excalidraw
+# or
+yarn add @derivative-canvas/core @excalidraw/excalidraw
+```
+
+## Basic Usage
+
+Wrap your app with the provider and render a layout:
+
+```tsx
+import { DerivativeCanvasProvider } from '@derivative-canvas/core';
+import { DerivativeCanvasLayout } from '@derivative-canvas/core';
+import { createNextAuthAdapter } from '@derivative-canvas/core/auth';
+import { createMongoDBAdapter } from '@derivative-canvas/core/storage';
+
+const canvasConfig = {
+  auth: {
+    provider: 'nextauth',
+    adapter: createNextAuthAdapter(),
+  },
+  storage: {
+    provider: 'mongodb',
+    adapter: createMongoDBAdapter({
+      connectionString: process.env.MONGODB_URI!,
+    }),
+  },
+  plugins: [{ pluginId: 'ai-chat', enabled: true }],
+  layout: 'hybrid', // 'canvas' | 'hybrid' | 'minimal'
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <DerivativeCanvasProvider config={canvasConfig}>
+          {children}
+        </DerivativeCanvasProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Boundaries and Dependencies
+
+- The framework treats `@excalidraw/excalidraw` as a peer dependency.
+- Keep Excalidraw modifications minimal (e.g., URL whitelist toggle) and document them.
+- Avoid importing Excalidraw internals directly from framework code. Use the public `@excalidraw/excalidraw` API.
+
+## Upstream Strategy (Phase 1)
+
+- Track upstream `excalidraw` in the fork and rebase weekly.
+- Maintain a minimal patch set; upstream any generic improvements where possible.
+- Keep the framework package independent via semantic versioning (to be formalized in Phase 2).
+
+## Next Steps
+
+- Add additional docs: adapters, plugin authoring, and integration cookbook.
+- Introduce CI checks for boundary enforcement (lint rules and typecheck).
+
+For an end-to-end example, see `framework/derivative-canvas/examples/helloconvo-integration.md`.

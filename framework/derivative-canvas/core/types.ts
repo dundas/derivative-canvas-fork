@@ -1,4 +1,7 @@
-import type { ExcalidrawElement, AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
+// Minimal local type definitions to avoid importing Excalidraw sources
+export type ExcalidrawElement = any;
+export type AppState = any;
+export type BinaryFiles = Record<string, any>;
 
 // Core Framework Types
 export interface ExcalidrawFrameworkConfig {

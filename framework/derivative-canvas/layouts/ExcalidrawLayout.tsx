@@ -1,25 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useState, Suspense } from 'react';
 import { useExcalidrawFramework } from '../core/ExcalidrawProvider';
 import type { LayoutProps } from '../core/types';
 
-// Dynamically import Excalidraw to avoid SSR issues
-const Excalidraw = dynamic(
-  async () => {
-    const mod = await import("@excalidraw/excalidraw");
-    return mod.Excalidraw;
-  },
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-lg">Loading Excalidraw...</div>
-      </div>
-    )
-  }
-);
+// Lazy-load Excalidraw to avoid SSR issues and heavy initial bundles
+const Excalidraw: React.LazyExoticComponent<React.ComponentType<any>> = React.lazy(async () => {
+  // NOTE: using local shim to avoid pulling in workspace Excalidraw sources during build
+  const mod = await import("../types/excalidraw-shim");
+  return { default: (mod as any).default as React.ComponentType<any> };
+});
 
 interface ExcalidrawLayoutProps extends LayoutProps {
   layoutType?: 'canvas' | 'hybrid' | 'minimal';
@@ -261,13 +251,20 @@ const ExcalidrawCanvas: React.FC<{ canvasId?: string }> = ({ canvasId }) => {
 
   return (
     <div className="h-full w-full">
-      {/* @ts-expect-error dynamic import typing */}
-      <Excalidraw
-        initialData={initialData}
-        onChange={handleChange}
-        zenModeEnabled={false}
-        viewModeEnabled={false}
-      />
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-full">
+            <div className="text-lg">Loading Excalidraw...</div>
+          </div>
+        }
+      >
+        <Excalidraw
+          initialData={initialData}
+          onChange={handleChange}
+          zenModeEnabled={false}
+          viewModeEnabled={false}
+        />
+      </Suspense>
     </div>
   );
 };

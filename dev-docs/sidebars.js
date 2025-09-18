@@ -25,6 +25,14 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "Framework",
+      collapsed: false,
+      items: [
+        "framework/overview",
+      ],
+    },
+    {
+      type: "category",
       label: "Codebase",
       items: ["codebase/json-schema", "codebase/frames"],
     },
