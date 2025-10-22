@@ -128,7 +128,7 @@ const AudioInputOverlay: React.FC<PluginUIProps> = ({ context, plugin }) => {
   );
 };
 
-// Export components for external use
-export { AudioInputButton } from './components/AudioInputButton';
-export { AudioRecordingService } from './services/audioRecordingService';
-export type { TranscriptionResult, RecordingState } from './services/audioRecordingService';
+// Export components for external use (TODO: Implement these)
+// export { AudioInputButton } from './components/AudioInputButton';
+// export { AudioRecordingService } from './services/audioRecordingService';
+// export type { TranscriptionResult, RecordingState } from './services/audioRecordingService';

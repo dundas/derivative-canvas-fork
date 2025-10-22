@@ -3,37 +3,6 @@
 import React, { useState } from 'react';
 import type { ExcalidrawPlugin, PluginUIProps } from '../../core/types';
 
-// AI Chat Plugin Implementation
-export const AIChatPlugin: ExcalidrawPlugin = {
-  id: 'ai-chat',
-  name: 'AI Chat Assistant',
-  version: '1.0.0',
-  type: 'ai-chat',
-
-  capabilities: {
-    requiresAuth: true,
-    requiresNetwork: true,
-    permissions: ['canvas:read', 'canvas:write'],
-  },
-
-  ui: {
-    sidebar: [AIChatSidebar],
-    toolbar: [AIChatButton],
-    dialogs: [AIChatDialog],
-  },
-
-  onElementsChange: (elements) => {
-    // Update AI context when canvas changes
-    console.log('AI Chat: Canvas elements changed', elements.length);
-  },
-
-  config: {
-    aiProvider: 'openai',
-    model: 'gpt-4',
-    systemPrompt: 'You are an AI assistant helping with canvas design and drawing. Provide helpful suggestions and answer questions about the drawing.',
-  },
-};
-
 // AI Chat Sidebar Component
 const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
@@ -176,4 +145,35 @@ const AIChatDialog: React.FC<PluginUIProps> = ({ context, plugin }) => {
       </div>
     </div>
   );
+};
+
+// AI Chat Plugin Implementation
+export const AIChatPlugin: ExcalidrawPlugin = {
+  id: 'ai-chat',
+  name: 'AI Chat Assistant',
+  version: '1.0.0',
+  type: 'ai-chat',
+
+  capabilities: {
+    requiresAuth: true,
+    requiresNetwork: true,
+    permissions: ['canvas:read', 'canvas:write'],
+  },
+
+  ui: {
+    sidebar: [AIChatSidebar],
+    toolbar: [AIChatButton],
+    dialogs: [AIChatDialog],
+  },
+
+  onElementsChange: (elements) => {
+    // Update AI context when canvas changes
+    console.log('AI Chat: Canvas elements changed', elements.length);
+  },
+
+  config: {
+    aiProvider: 'openai',
+    model: 'gpt-4',
+    systemPrompt: 'You are an AI assistant helping with canvas design and drawing. Provide helpful suggestions and answer questions about the drawing.',
+  },
 };
