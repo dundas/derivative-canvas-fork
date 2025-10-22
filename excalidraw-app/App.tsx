@@ -133,6 +133,7 @@ import DebugCanvas, {
 } from "./components/DebugCanvas";
 import { AIComponents } from "./components/AI";
 import { ExcalidrawPlusIframeExport } from "./ExcalidrawPlusIframeExport";
+import { PluginContainer } from "./components/PluginContainer";
 
 import "./index.scss";
 
@@ -1133,6 +1134,15 @@ const ExcalidrawWrapper = () => {
             appState={excalidrawAPI.getAppState()}
             scale={window.devicePixelRatio}
             ref={debugCanvasRef}
+          />
+        )}
+
+        {/* Plugin System */}
+        {excalidrawAPI && (
+          <PluginContainer
+            elements={excalidrawAPI.getSceneElements()}
+            appState={excalidrawAPI.getAppState()}
+            files={excalidrawAPI.getFiles()}
           />
         )}
       </Excalidraw>
