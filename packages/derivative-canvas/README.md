@@ -2,13 +2,40 @@
 
 **Derivative Canvas** is a powerful, standardized framework for integrating enhanced Excalidraw functionality into Next.js projects. It provides a plugin-based architecture, authentication integration, storage adapters, and customizable layouts.
 
+## 🤖 NEW: AI Canvas Collaboration
+
+> **Transform your canvas into a collaborative workspace where AI agents work alongside humans.**
+
+**[→ Read the AI Collaboration Guide](./AI_COLLABORATION.md)**
+
+Instead of AI being a separate chat interface, AI becomes **ever-present** on your canvas:
+- **Coding**: AI creates VM windows showing test output, debugs code, explains implementations
+- **Marketing**: Import products → AI generates ad variations → Export to Facebook Ads
+- **Visual Collaboration**: AI creates objects, organizes ideas, helps you think visually
+
+```typescript
+// AI can create and manipulate canvas objects
+aiController.createVMWindow('npm test', output);
+aiController.createCard('Product A', description);
+aiController.createImage(url, dimensions);
+
+// Selection-based interactions
+// User selects objects → Right-click → "Ask AI about selection"
+```
+
+**Quick Links:**
+- [AI Collaboration Overview](./AI_COLLABORATION.md)
+- [Complete Guide](./docs/AI_COLLABORATION_GUIDE.md)
+- [Coding Plugin Example](./plugins/use-cases/CodingCollaborationPlugin.tsx)
+- [Marketing Plugin Example](./plugins/use-cases/MarketingCollaborationPlugin.tsx)
+
 ## 🌟 Key Features
 
 - **🔌 Plugin Architecture**: Extensible plugin system for AI chat, media input, integrations, and more
+- **🤖 AI Canvas Collaboration**: AI agents that create, modify, and organize visual objects on canvas
 - **🔐 Authentication Integration**: Built-in support for NextAuth, Clerk, Auth0, and custom auth providers
 - **💾 Storage Adapters**: MongoDB, PostgreSQL, Firebase, Supabase, and localStorage support
 - **🎨 Flexible Layouts**: Canvas-only, hybrid (traditional + canvas toggle), and minimal layouts
-- **🤖 AI-Enhanced**: Ready for AI chat assistants and intelligent canvas operations
 - **📱 Responsive**: Works seamlessly across desktop and mobile devices
 - **🎯 TypeScript First**: Full TypeScript support with comprehensive type definitions
 
@@ -106,7 +133,10 @@ export async function DELETE(req: Request) {
 
 ### Built-in Plugins
 
-- **AI Chat Plugin**: Intelligent assistant for canvas operations
+- **Enhanced AI Chat Plugin**: AI that creates and manipulates canvas objects ([Guide](./AI_COLLABORATION.md))
+- **Coding Collaboration Plugin**: AI pair programming with VM windows and chat ([Example](./plugins/use-cases/CodingCollaborationPlugin.tsx))
+- **Marketing Collaboration Plugin**: Import products, generate ads, export campaigns ([Example](./plugins/use-cases/MarketingCollaborationPlugin.tsx))
+- **Basic AI Chat Plugin**: Simple chat interface for canvas operations
 - **Media Input Plugin**: Audio/video recording and screen capture
 - **Integration Plugins**: Shopify, Facebook Ads, and custom service integrations
 
