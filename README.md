@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Derivative Canvas Framework
 
 **Derivative Canvas** is a powerful, standardized framework for integrating enhanced Excalidraw functionality into Next.js projects. It provides a plugin-based architecture, authentication integration, storage adapters, and customizable layouts.
