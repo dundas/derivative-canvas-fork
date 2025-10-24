@@ -6,15 +6,15 @@ export type BinaryFiles = Record<string, any>;
 // Core Framework Types
 export interface ExcalidrawFrameworkConfig {
   auth: {
-    provider: 'nextauth' | 'clerk' | 'auth0' | 'custom';
+    provider: "nextauth" | "clerk" | "auth0" | "custom";
     adapter: AuthAdapter;
   };
   storage: {
-    provider: 'mongodb' | 'postgres' | 'firebase' | 'supabase' | 'localStorage';
+    provider: "mongodb" | "postgres" | "firebase" | "supabase" | "localStorage";
     adapter: StorageAdapter;
   };
   plugins: PluginConfig[];
-  layout: 'canvas' | 'hybrid' | 'minimal';
+  layout: "canvas" | "hybrid" | "minimal";
   theme?: ExcalidrawTheme;
   collaboration?: CollaborationConfig;
 }
@@ -66,11 +66,15 @@ export interface StorageAdapter {
   loadCanvas(userId: string, canvasId: string): Promise<CanvasData | null>;
   listCanvases(userId: string): Promise<CanvasMetadata[]>;
   deleteCanvas(userId: string, canvasId: string): Promise<void>;
-  shareCanvas(userId: string, canvasId: string, permissions: SharePermissions): Promise<string>;
+  shareCanvas(
+    userId: string,
+    canvasId: string,
+    permissions: SharePermissions,
+  ): Promise<string>;
 }
 
 export interface SharePermissions {
-  type: 'view' | 'edit' | 'admin';
+  type: "view" | "edit" | "admin";
   users?: string[];
   public?: boolean;
   expiresAt?: Date;
@@ -81,7 +85,12 @@ export interface ExcalidrawPlugin {
   id: string;
   name: string;
   version: string;
-  type: 'ai-chat' | 'media-input' | 'integration' | 'ui-enhancement' | 'workflow';
+  type:
+    | "ai-chat"
+    | "media-input"
+    | "integration"
+    | "ui-enhancement"
+    | "workflow";
 
   // Lifecycle hooks
   onMount?: (context: PluginContext) => void;
@@ -145,15 +154,15 @@ export interface PluginConfig {
 }
 
 export type Permission =
-  | 'canvas:read'
-  | 'canvas:write'
-  | 'canvas:delete'
-  | 'canvas:share'
-  | 'microphone'
-  | 'camera'
-  | 'screen-capture'
-  | 'file-upload'
-  | 'ai-access';
+  | "canvas:read"
+  | "canvas:write"
+  | "canvas:delete"
+  | "canvas:share"
+  | "microphone"
+  | "camera"
+  | "screen-capture"
+  | "file-upload"
+  | "ai-access";
 
 // Framework API
 export interface ExcalidrawFrameworkAPI {
@@ -162,7 +171,7 @@ export interface ExcalidrawFrameworkAPI {
   unregisterPlugin(pluginId: string): void;
   getPlugin(pluginId: string): ExcalidrawPlugin | null;
   listPlugins(): ExcalidrawPlugin[];
-  getPluginsByType(type: ExcalidrawPlugin['type']): ExcalidrawPlugin[];
+  getPluginsByType(type: ExcalidrawPlugin["type"]): ExcalidrawPlugin[];
 
   // Canvas operations
   updateElements(elements: ExcalidrawElement[]): void;
@@ -179,7 +188,7 @@ export interface ExcalidrawFrameworkAPI {
 
   // Collaboration
   shareCanvas(permissions: SharePermissions): Promise<string>;
-  inviteCollaborator(email: string, permission: 'view' | 'edit'): Promise<void>;
+  inviteCollaborator(email: string, permission: "view" | "edit"): Promise<void>;
 
   // Events
   on(event: FrameworkEvent, handler: (...args: any[]) => void): void;
@@ -188,16 +197,18 @@ export interface ExcalidrawFrameworkAPI {
 }
 
 export type FrameworkEvent =
-  | 'plugin:mounted'
-  | 'plugin:unmounted'
-  | 'canvas:loaded'
-  | 'canvas:saved'
-  | 'canvas:shared'
-  | 'elements:changed'
-  | 'appstate:changed'
-  | 'user:changed'
-  | 'collaboration:joined'
-  | 'collaboration:left';
+  | "plugin:mounted"
+  | "plugin:unmounted"
+  | "canvas:loaded"
+  | "canvas:saved"
+  | "canvas:shared"
+  | "elements:changed"
+  | "appstate:changed"
+  | "user:changed"
+  | "collaboration:joined"
+  | "collaboration:left"
+  | "audio-input:transcription"
+  | "transcription:complete";
 
 // Theme Types
 export interface ExcalidrawTheme {
@@ -216,7 +227,7 @@ export interface ExcalidrawTheme {
 // Collaboration Types
 export interface CollaborationConfig {
   enabled: boolean;
-  provider: 'yjs' | 'socket.io' | 'custom';
+  provider: "yjs" | "socket.io" | "custom";
   serverUrl?: string;
   roomId?: string;
   maxCollaborators?: number;
@@ -235,20 +246,16 @@ export interface LayoutProps {
 
 // Error Types
 export class ExcalidrawFrameworkError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public details?: any
-  ) {
+  constructor(message: string, public code: string, public details?: any) {
     super(message);
-    this.name = 'ExcalidrawFrameworkError';
+    this.name = "ExcalidrawFrameworkError";
   }
 }
 
 export type ErrorCode =
-  | 'AUTH_REQUIRED'
-  | 'PLUGIN_NOT_FOUND'
-  | 'STORAGE_ERROR'
-  | 'PERMISSION_DENIED'
-  | 'CANVAS_NOT_FOUND'
-  | 'COLLABORATION_ERROR';
+  | "AUTH_REQUIRED"
+  | "PLUGIN_NOT_FOUND"
+  | "STORAGE_ERROR"
+  | "PERMISSION_DENIED"
+  | "CANVAS_NOT_FOUND"
+  | "COLLABORATION_ERROR";

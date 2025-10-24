@@ -3,7 +3,7 @@
  * TODO: Full implementation coming soon
  */
 
-import React from 'react';
+import React from "react";
 
 interface AudioInputButtonProps {
   onTranscription: (text: string) => void;
@@ -14,7 +14,7 @@ interface AudioInputButtonProps {
     language?: string;
     apiEndpoint?: string;
   };
-  mode?: 'toggle' | 'push-to-talk';
+  mode?: "toggle" | "push-to-talk";
   position?: string;
   showVisualizer?: boolean;
 }
@@ -22,12 +22,14 @@ interface AudioInputButtonProps {
 export const AudioInputButton: React.FC<AudioInputButtonProps> = ({
   onTranscription,
   transcriptionConfig,
-  mode = 'toggle',
-  position = 'bottom-right',
+  mode = "toggle",
+  position = "bottom-right",
   showVisualizer = true,
 }) => {
   const handleClick = () => {
-    console.log('[Audio Input] Button clicked - Full implementation coming soon');
+    console.log(
+      "[Audio Input] Button clicked - Full implementation coming soon",
+    );
     // TODO: Implement audio recording and transcription
   };
 
@@ -36,21 +38,22 @@ export const AudioInputButton: React.FC<AudioInputButtonProps> = ({
       onClick={handleClick}
       className="audio-input-button"
       style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        width: '50px',
-        height: '50px',
-        borderRadius: '50%',
-        backgroundColor: '#007bff',
-        color: 'white',
-        border: 'none',
-        cursor: 'pointer',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '24px',
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        width: "50px",
+        height: "50px",
+        borderRadius: "50%",
+        backgroundColor: "#007bff",
+        color: "white",
+        border: "none",
+        cursor: "pointer",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "24px",
+        zIndex: 1000,
       }}
       title="Audio Input (Coming Soon)"
     >

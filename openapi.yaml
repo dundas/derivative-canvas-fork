@@ -1,0 +1,930 @@
+openapi: 3.0.3
+info:
+  title: Derivative Canvas API
+  description: |
+    RESTful API for Derivative Canvas - A powerful framework for integrating enhanced Excalidraw functionality with authentication, storage, and plugin support.
+
+    ## Features
+    - Canvas storage and retrieval
+    - User authentication integration
+    - Collaborative canvas sharing
+    - Plugin-based extensibility
+
+    ## Base URL
+    All API requests should be made to: `https://your-domain.com/api/excalidraw`
+
+  version: 1.0.0
+  contact:
+    name: Derivative Canvas Support
+    email: support@derivative-canvas.dev
+    url: https://docs.derivative-canvas.dev
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api/excalidraw
+    description: Local development server
+  - url: https://api.derivative-canvas.dev
+    description: Production server
+  - url: https://staging-api.derivative-canvas.dev
+    description: Staging server
+
+tags:
+  - name: Storage
+    description: Canvas storage operations (save, load, list, delete)
+  - name: Sharing
+    description: Canvas sharing and collaboration
+  - name: Health
+    description: API health and status checks
+
+paths:
+  /storage/save:
+    post:
+      tags:
+        - Storage
+      summary: Save canvas
+      description: |
+        Save or update a canvas for a user. If the canvas exists, it will be updated; otherwise, a new canvas will be created.
+
+        **Note**: Requires authentication.
+      operationId: saveCanvas
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - canvasId
+                - data
+              properties:
+                userId:
+                  type: string
+                  description: Unique identifier of the user
+                  example: "user_123abc"
+                canvasId:
+                  type: string
+                  description: Unique identifier for the canvas
+                  example: "canvas_xyz789"
+                data:
+                  $ref: '#/components/schemas/CanvasData'
+            examples:
+              basic:
+                summary: Basic canvas save
+                value:
+                  userId: "user_123abc"
+                  canvasId: "canvas_xyz789"
+                  data:
+                    id: "canvas_xyz789"
+                    name: "My Whiteboard"
+                    elements: []
+                    appState:
+                      viewBackgroundColor: "#ffffff"
+                    files: {}
+                    createdAt: "2025-01-15T10:30:00Z"
+                    updatedAt: "2025-01-15T10:30:00Z"
+                    userId: "user_123abc"
+              with-elements:
+                summary: Canvas with elements
+                value:
+                  userId: "user_123abc"
+                  canvasId: "canvas_xyz789"
+                  data:
+                    id: "canvas_xyz789"
+                    name: "Design Mockup"
+                    elements:
+                      - id: "element_1"
+                        type: "rectangle"
+                        x: 100
+                        y: 100
+                        width: 200
+                        height: 150
+                    appState:
+                      viewBackgroundColor: "#f0f0f0"
+                    files: {}
+                    createdAt: "2025-01-15T10:00:00Z"
+                    updatedAt: "2025-01-15T10:45:00Z"
+                    userId: "user_123abc"
+      responses:
+        '200':
+          description: Canvas saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  canvasId:
+                    type: string
+                    example: "canvas_xyz789"
+                  message:
+                    type: string
+                    example: "Canvas saved successfully"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /storage/load:
+    get:
+      tags:
+        - Storage
+      summary: Load canvas
+      description: |
+        Retrieve a specific canvas by user ID and canvas ID.
+
+        **Note**: Requires authentication. Users can only load their own canvases or canvases shared with them.
+      operationId: loadCanvas
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: Unique identifier of the user
+          schema:
+            type: string
+          example: "user_123abc"
+        - name: canvasId
+          in: query
+          required: true
+          description: Unique identifier of the canvas
+          schema:
+            type: string
+          example: "canvas_xyz789"
+      responses:
+        '200':
+          description: Canvas retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  canvas:
+                    $ref: '#/components/schemas/CanvasData'
+              examples:
+                success:
+                  summary: Canvas found
+                  value:
+                    canvas:
+                      id: "canvas_xyz789"
+                      name: "My Whiteboard"
+                      elements:
+                        - id: "element_1"
+                          type: "rectangle"
+                          x: 100
+                          y: 100
+                          width: 200
+                          height: 150
+                      appState:
+                        viewBackgroundColor: "#ffffff"
+                      files: {}
+                      createdAt: "2025-01-15T10:00:00Z"
+                      updatedAt: "2025-01-15T10:45:00Z"
+                      userId: "user_123abc"
+                not-found:
+                  summary: Canvas not found
+                  value:
+                    canvas: null
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Canvas not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Canvas not found"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /storage/list:
+    get:
+      tags:
+        - Storage
+      summary: List user canvases
+      description: |
+        Retrieve a list of all canvases owned by or shared with a specific user.
+        Returns canvas metadata without full element data for performance.
+
+        **Note**: Requires authentication.
+      operationId: listCanvases
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: Unique identifier of the user
+          schema:
+            type: string
+          example: "user_123abc"
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of canvases to return (default 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          example: 20
+        - name: offset
+          in: query
+          required: false
+          description: Number of canvases to skip (for pagination)
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          example: 0
+        - name: sortBy
+          in: query
+          required: false
+          description: Field to sort by
+          schema:
+            type: string
+            enum: [createdAt, updatedAt, name]
+            default: updatedAt
+          example: "updatedAt"
+        - name: order
+          in: query
+          required: false
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          example: "desc"
+      responses:
+        '200':
+          description: List of canvases retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  canvases:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CanvasMetadata'
+                  total:
+                    type: integer
+                    description: Total number of canvases
+                    example: 42
+                  limit:
+                    type: integer
+                    example: 20
+                  offset:
+                    type: integer
+                    example: 0
+              examples:
+                success:
+                  summary: User canvases
+                  value:
+                    canvases:
+                      - id: "canvas_xyz789"
+                        name: "My Whiteboard"
+                        createdAt: "2025-01-15T10:00:00Z"
+                        updatedAt: "2025-01-15T10:45:00Z"
+                        userId: "user_123abc"
+                        thumbnail: "data:image/png;base64,..."
+                        isPublic: false
+                        collaborators: []
+                      - id: "canvas_abc123"
+                        name: "Design Mockup"
+                        createdAt: "2025-01-14T14:30:00Z"
+                        updatedAt: "2025-01-14T15:20:00Z"
+                        userId: "user_123abc"
+                        isPublic: true
+                        collaborators: ["user_456def"]
+                    total: 2
+                    limit: 50
+                    offset: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /storage/delete:
+    delete:
+      tags:
+        - Storage
+      summary: Delete canvas
+      description: |
+        Permanently delete a canvas. This operation cannot be undone.
+
+        **Note**: Requires authentication. Only the canvas owner can delete a canvas.
+      operationId: deleteCanvas
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - canvasId
+              properties:
+                userId:
+                  type: string
+                  description: Unique identifier of the user
+                  example: "user_123abc"
+                canvasId:
+                  type: string
+                  description: Unique identifier of the canvas to delete
+                  example: "canvas_xyz789"
+            examples:
+              basic:
+                summary: Delete canvas
+                value:
+                  userId: "user_123abc"
+                  canvasId: "canvas_xyz789"
+      responses:
+        '200':
+          description: Canvas deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Canvas deleted successfully"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Forbidden - User does not have permission to delete this canvas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You do not have permission to delete this canvas"
+        '404':
+          description: Canvas not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Canvas not found"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /storage/share:
+    post:
+      tags:
+        - Sharing
+      summary: Share canvas
+      description: |
+        Create a sharing link for a canvas with specific permissions.
+        Share links can be configured to expire after a certain time or allow specific users.
+
+        **Note**: Requires authentication. Only the canvas owner can create share links.
+      operationId: shareCanvas
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - canvasId
+                - permissions
+              properties:
+                userId:
+                  type: string
+                  description: Unique identifier of the user
+                  example: "user_123abc"
+                canvasId:
+                  type: string
+                  description: Unique identifier of the canvas to share
+                  example: "canvas_xyz789"
+                permissions:
+                  $ref: '#/components/schemas/SharePermissions'
+            examples:
+              public-view:
+                summary: Public view-only link
+                value:
+                  userId: "user_123abc"
+                  canvasId: "canvas_xyz789"
+                  permissions:
+                    type: "view"
+                    public: true
+              specific-users-edit:
+                summary: Edit access for specific users
+                value:
+                  userId: "user_123abc"
+                  canvasId: "canvas_xyz789"
+                  permissions:
+                    type: "edit"
+                    users: ["user_456def", "user_789ghi"]
+                    public: false
+              expiring-link:
+                summary: Temporary public link
+                value:
+                  userId: "user_123abc"
+                  canvasId: "canvas_xyz789"
+                  permissions:
+                    type: "view"
+                    public: true
+                    expiresAt: "2025-01-20T00:00:00Z"
+      responses:
+        '200':
+          description: Share link created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shareId:
+                    type: string
+                    description: Unique share identifier
+                    example: "share_1234567890"
+                  shareUrl:
+                    type: string
+                    description: Full URL for sharing
+                    example: "https://your-domain.com/canvas/share/share_1234567890"
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: "2025-01-20T00:00:00Z"
+              examples:
+                success:
+                  summary: Share link created
+                  value:
+                    shareId: "share_1234567890"
+                    shareUrl: "https://derivative-canvas.dev/canvas/share/share_1234567890"
+                    expiresAt: null
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Forbidden - User does not have permission to share this canvas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You do not have permission to share this canvas"
+        '404':
+          description: Canvas not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Canvas not found"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check API health and status
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-15T10:30:00Z"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token obtained from authentication provider.
+        Include in Authorization header as: `Bearer <token>`
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        API key for server-to-server authentication.
+        Include in X-API-Key header.
+
+  schemas:
+    CanvasData:
+      type: object
+      required:
+        - id
+        - name
+        - elements
+        - appState
+        - files
+        - createdAt
+        - updatedAt
+        - userId
+      properties:
+        id:
+          type: string
+          description: Unique canvas identifier
+          example: "canvas_xyz789"
+        name:
+          type: string
+          description: Canvas name/title
+          example: "My Whiteboard"
+        elements:
+          type: array
+          description: Array of Excalidraw elements (shapes, text, etc.)
+          items:
+            $ref: '#/components/schemas/ExcalidrawElement'
+        appState:
+          type: object
+          description: Excalidraw application state
+          properties:
+            viewBackgroundColor:
+              type: string
+              example: "#ffffff"
+            currentItemStrokeColor:
+              type: string
+              example: "#000000"
+            gridSize:
+              type: number
+              example: 20
+          additionalProperties: true
+        files:
+          type: object
+          description: Binary files (images, etc.) referenced by elements
+          additionalProperties:
+            type: object
+            properties:
+              id:
+                type: string
+              mimeType:
+                type: string
+              dataURL:
+                type: string
+              created:
+                type: number
+        createdAt:
+          type: string
+          format: date-time
+          description: Canvas creation timestamp
+          example: "2025-01-15T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2025-01-15T10:45:00Z"
+        userId:
+          type: string
+          description: Owner user ID
+          example: "user_123abc"
+        metadata:
+          type: object
+          description: Additional custom metadata
+          additionalProperties: true
+          example:
+            tags: ["design", "mockup"]
+            category: "work"
+
+    CanvasMetadata:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+        - userId
+      properties:
+        id:
+          type: string
+          description: Unique canvas identifier
+          example: "canvas_xyz789"
+        name:
+          type: string
+          description: Canvas name/title
+          example: "My Whiteboard"
+        createdAt:
+          type: string
+          format: date-time
+          description: Canvas creation timestamp
+          example: "2025-01-15T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2025-01-15T10:45:00Z"
+        userId:
+          type: string
+          description: Owner user ID
+          example: "user_123abc"
+        thumbnail:
+          type: string
+          description: Base64-encoded thumbnail image
+          nullable: true
+          example: "data:image/png;base64,iVBORw0KGgoAAAANS..."
+        isPublic:
+          type: boolean
+          description: Whether the canvas is publicly accessible
+          default: false
+          example: false
+        collaborators:
+          type: array
+          description: Array of user IDs with access to this canvas
+          items:
+            type: string
+          example: ["user_456def", "user_789ghi"]
+
+    ExcalidrawElement:
+      type: object
+      description: A single Excalidraw canvas element (shape, text, arrow, etc.)
+      required:
+        - id
+        - type
+        - x
+        - y
+      properties:
+        id:
+          type: string
+          description: Unique element identifier
+          example: "element_abc123"
+        type:
+          type: string
+          enum:
+            - rectangle
+            - diamond
+            - ellipse
+            - arrow
+            - line
+            - freedraw
+            - text
+            - image
+          description: Element type
+          example: "rectangle"
+        x:
+          type: number
+          description: X coordinate
+          example: 100
+        'y':
+          type: number
+          description: Y coordinate
+          example: 150
+        width:
+          type: number
+          description: Element width
+          example: 200
+        height:
+          type: number
+          description: Element height
+          example: 100
+        strokeColor:
+          type: string
+          description: Stroke color (hex)
+          example: "#000000"
+        backgroundColor:
+          type: string
+          description: Background color (hex)
+          example: "#ffffff"
+        fillStyle:
+          type: string
+          enum: [solid, hachure, cross-hatch]
+          example: "hachure"
+        strokeWidth:
+          type: number
+          example: 2
+        roughness:
+          type: number
+          minimum: 0
+          maximum: 2
+          example: 1
+        opacity:
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 100
+        angle:
+          type: number
+          description: Rotation angle in radians
+          example: 0
+        isDeleted:
+          type: boolean
+          example: false
+        groupIds:
+          type: array
+          items:
+            type: string
+          description: IDs of groups this element belongs to
+          example: []
+        boundElements:
+          type: array
+          nullable: true
+          description: Elements bound to this element (for arrows)
+          items:
+            type: object
+        link:
+          type: string
+          nullable: true
+          description: Hyperlink URL
+          example: "https://example.com"
+        locked:
+          type: boolean
+          description: Whether element is locked from editing
+          example: false
+
+    SharePermissions:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [view, edit, admin]
+          description: |
+            Permission level:
+            - `view`: Read-only access
+            - `edit`: Can modify canvas
+            - `admin`: Full control including sharing and deletion
+          example: "view"
+        users:
+          type: array
+          description: Specific user IDs to share with (if not public)
+          items:
+            type: string
+          example: ["user_456def", "user_789ghi"]
+        public:
+          type: boolean
+          description: Whether the canvas is publicly accessible via share link
+          default: false
+          example: true
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Expiration timestamp for the share link
+          example: "2025-01-20T00:00:00Z"
+
+    User:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+          example: "user_123abc"
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: "user@example.com"
+        name:
+          type: string
+          nullable: true
+          example: "John Doe"
+        image:
+          type: string
+          nullable: true
+          description: Profile image URL
+          example: "https://example.com/avatars/user123.jpg"
+        role:
+          type: string
+          nullable: true
+          enum: [user, admin, moderator]
+          example: "user"
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Additional user metadata
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Invalid request parameters"
+        code:
+          type: string
+          description: Error code for programmatic handling
+          example: "INVALID_PARAMETERS"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: Bad request - Invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missing-params:
+              summary: Missing required parameters
+              value:
+                error: "Missing required parameters"
+                code: "MISSING_PARAMETERS"
+                details:
+                  missing: ["userId", "canvasId"]
+            invalid-format:
+              summary: Invalid parameter format
+              value:
+                error: "Invalid parameter format"
+                code: "INVALID_FORMAT"
+                details:
+                  parameter: "userId"
+                  expected: "string"
+
+    Unauthorized:
+      description: Unauthorized - Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            no-token:
+              summary: No authentication token provided
+              value:
+                error: "Authentication required"
+                code: "UNAUTHORIZED"
+            invalid-token:
+              summary: Invalid authentication token
+              value:
+                error: "Invalid authentication token"
+                code: "INVALID_TOKEN"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            generic:
+              summary: Generic server error
+              value:
+                error: "Internal server error"
+                code: "INTERNAL_ERROR"
+            database-error:
+              summary: Database error
+              value:
+                error: "Database connection failed"
+                code: "DATABASE_ERROR"
+
+security:
+  - bearerAuth: []

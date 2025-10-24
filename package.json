@@ -87,7 +87,11 @@
     "release:latest": "node scripts/release.js --tag=latest",
     "rm:build": "rimraf --glob excalidraw-app/build excalidraw-app/dist excalidraw-app/dev-dist packages/*/dist packages/*/build examples/*/build examples/*/dist",
     "rm:node_modules": "rimraf --glob node_modules excalidraw-app/node_modules packages/*/node_modules",
-    "clean-install": "yarn rm:node_modules && yarn install"
+    "clean-install": "yarn rm:node_modules && yarn install",
+    "docs:api": "echo '📚 API Documentation available at: docs/API_DOCUMENTATION.md' && echo '📖 OpenAPI Spec: openapi.yaml' && echo '🔌 Plugin Events: framework/derivative-canvas/docs/PLUGIN_EVENTS.md'",
+    "docs:api:serve": "docker run -p 8080:8080 -e SWAGGER_JSON=/openapi.yaml -v $(pwd)/openapi.yaml:/openapi.yaml swaggerapi/swagger-ui",
+    "docs:api:serve-local": "npx @redocly/cli preview-docs openapi.yaml",
+    "docs:api:validate": "npx @redocly/cli lint openapi.yaml"
   },
   "resolutions": {
     "strip-ansi": "6.0.1"
