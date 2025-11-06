@@ -1,20 +1,24 @@
-import type { AuthAdapter, User } from '../../core/types';
+import type { AuthAdapter, User } from "../../core/types";
 
 // NextAuth adapter
 export const createNextAuthAdapter = (options?: {
   signInPage?: string;
   apiRoute?: string;
 }): AuthAdapter => {
-  const { signInPage = '/auth/signin', apiRoute = '/api/auth' } = options || {};
+  const { signInPage = "/auth/signin", apiRoute = "/api/auth" } = options || {};
 
   const getCurrentUser = async (): Promise<User | null> => {
     try {
       // For client-side, we need to use the session endpoint
       const response = await fetch(`${apiRoute}/session`);
-      if (!response.ok) return null;
+      if (!response.ok) {
+        return null;
+      }
 
       const session = await response.json();
-      if (!session?.user) return null;
+      if (!session?.user) {
+        return null;
+      }
 
       return {
         id: session.user.id || session.user.email, // Fallback to email if no id
@@ -25,7 +29,7 @@ export const createNextAuthAdapter = (options?: {
         metadata: session.user.metadata || {},
       };
     } catch (error) {
-      console.error('Failed to get current user:', error);
+      console.error("Failed to get current user:", error);
       return null;
     }
   };
@@ -34,7 +38,7 @@ export const createNextAuthAdapter = (options?: {
     // Redirect to NextAuth sign-in page
     const url = new URL(signInPage, window.location.origin);
     if (provider) {
-      url.searchParams.set('callbackUrl', window.location.href);
+      url.searchParams.set("callbackUrl", window.location.href);
     }
     window.location.href = url.toString();
   };
@@ -42,16 +46,16 @@ export const createNextAuthAdapter = (options?: {
   const signOut = async (): Promise<void> => {
     try {
       await fetch(`${apiRoute}/signout`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       // Redirect to home page after sign out
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (error) {
-      console.error('Failed to sign out:', error);
+      console.error("Failed to sign out:", error);
       throw error;
     }
   };
@@ -59,12 +63,14 @@ export const createNextAuthAdapter = (options?: {
   const getToken = async (): Promise<string | null> => {
     try {
       const response = await fetch(`${apiRoute}/session`);
-      if (!response.ok) return null;
+      if (!response.ok) {
+        return null;
+      }
 
       const session = await response.json();
       return session?.accessToken || null;
     } catch (error) {
-      console.error('Failed to get token:', error);
+      console.error("Failed to get token:", error);
       return null;
     }
   };
@@ -85,12 +91,14 @@ export const createNextAuthAdapter = (options?: {
 
 // Server-side NextAuth adapter (for use in API routes)
 export const createServerNextAuthAdapter = (
-  getSession: () => Promise<any>
+  getSession: () => Promise<any>,
 ): AuthAdapter => {
   const getCurrentUser = async (): Promise<User | null> => {
     try {
       const session = await getSession();
-      if (!session?.user) return null;
+      if (!session?.user) {
+        return null;
+      }
 
       return {
         id: session.user.id || session.user.email,
@@ -101,7 +109,7 @@ export const createServerNextAuthAdapter = (
         metadata: session.user.metadata || {},
       };
     } catch (error) {
-      console.error('Failed to get current user:', error);
+      console.error("Failed to get current user:", error);
       return null;
     }
   };
@@ -111,7 +119,7 @@ export const createServerNextAuthAdapter = (
       const session = await getSession();
       return session?.accessToken || null;
     } catch (error) {
-      console.error('Failed to get token:', error);
+      console.error("Failed to get token:", error);
       return null;
     }
   };
@@ -124,10 +132,10 @@ export const createServerNextAuthAdapter = (
   return {
     getCurrentUser,
     signIn: async (): Promise<void> => {
-      throw new Error('Sign-in not available on server side');
+      throw new Error("Sign-in not available on server side");
     },
     signOut: async (): Promise<void> => {
-      throw new Error('Sign-out not available on server side');
+      throw new Error("Sign-out not available on server side");
     },
     getToken,
     isAuthenticated,

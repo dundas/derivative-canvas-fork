@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import type { PluginUIProps } from '../../../core/types';
-import type { Message } from '../services/aiService';
-import { AIService } from '../services/aiService';
-import { ElementFactory } from '../utils/elementFactory';
+import React, { useState, useEffect } from "react";
+
+import { AIService } from "../services/aiService";
+
+import { ElementFactory } from "../utils/elementFactory";
+
+import type { PluginUIProps } from "../../../core/types";
+import type { Message } from "../services/aiService";
 
 interface ChatOnCanvasProps extends PluginUIProps {
   onCreateElements?: (elements: any[]) => void;
@@ -22,14 +25,16 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
   aiService: externalAiService,
   showInput = true,
 }) => {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [aiService] = useState(() => {
-    if (externalAiService) return externalAiService;
+    if (externalAiService) {
+      return externalAiService;
+    }
 
     const config = plugin.config || {};
     return new AIService({
-      provider: config.aiProvider || 'custom',
+      provider: config.aiProvider || "custom",
       apiKey: config.apiKey,
       model: config.model,
       apiEndpoint: config.apiEndpoint,
@@ -37,14 +42,19 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
     });
   });
 
-  const elementFactory = React.useRef(new ElementFactory({
-    elements: context.canvas.elements,
-    appState: context.canvas.appState,
-  }));
+  const elementFactory = React.useRef(
+    new ElementFactory({
+      elements: context.canvas.elements,
+      appState: context.canvas.appState,
+    }),
+  );
 
   // Update context when canvas changes
   useEffect(() => {
-    aiService.updateCanvasContext(context.canvas.elements, context.canvas.appState);
+    aiService.updateCanvasContext(
+      context.canvas.elements,
+      context.canvas.appState,
+    );
     elementFactory.current.updateContext({
       elements: context.canvas.elements,
       appState: context.canvas.appState,
@@ -52,7 +62,9 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
   }, [context.canvas.elements, context.canvas.appState, aiService]);
 
   const handleSendMessage = async () => {
-    if (!input.trim() || isLoading || !onCreateElements) return;
+    if (!input.trim() || isLoading || !onCreateElements) {
+      return;
+    }
 
     setIsLoading(true);
 
@@ -60,7 +72,7 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
       // Create user message bubble on canvas
       const userBubble = elementFactory.current.createChatBubble({
         message: input,
-        role: 'user',
+        role: "user",
       });
       onCreateElements(userBubble);
 
@@ -68,12 +80,15 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
       const response = await aiService.sendMessage(input);
 
       // Create AI response bubble on canvas
-      const aiBubble = elementFactory.current.createChatBubble({
-        message: response.message,
-        role: 'assistant',
-      }, {
-        strategy: 'flow', // Place below user message
-      });
+      const aiBubble = elementFactory.current.createChatBubble(
+        {
+          message: response.message,
+          role: "assistant",
+        },
+        {
+          strategy: "flow", // Place below user message
+        },
+      );
       onCreateElements(aiBubble);
 
       // Execute any canvas actions from the AI
@@ -83,39 +98,49 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
         for (const action of response.actions) {
           try {
             switch (action.type) {
-              case 'create-code':
-                const codeElements = elementFactory.current.createCodeBlock({
-                  code: action.data.code,
-                  language: action.data.language,
-                  title: action.data.language,
-                }, {
-                  strategy: 'flow',
-                });
+              case "create-code":
+                const codeElements = elementFactory.current.createCodeBlock(
+                  {
+                    code: action.data.code,
+                    language: action.data.language,
+                    title: action.data.language,
+                  },
+                  {
+                    strategy: "flow",
+                  },
+                );
                 actionElements.push(...codeElements);
                 break;
 
-              case 'create-terminal':
-                const terminalElements = elementFactory.current.createTerminalOutput({
-                  output: action.data.output,
-                  title: 'Terminal',
-                }, {
-                  strategy: 'flow',
-                });
+              case "create-terminal":
+                const terminalElements =
+                  elementFactory.current.createTerminalOutput(
+                    {
+                      output: action.data.output,
+                      title: "Terminal",
+                    },
+                    {
+                      strategy: "flow",
+                    },
+                  );
                 actionElements.push(...terminalElements);
                 break;
 
-              case 'create-note':
-                const noteElements = elementFactory.current.createNote({
-                  text: action.data.text,
-                  color: 'yellow',
-                }, {
-                  strategy: 'flow',
-                });
+              case "create-note":
+                const noteElements = elementFactory.current.createNote(
+                  {
+                    text: action.data.text,
+                    color: "yellow",
+                  },
+                  {
+                    strategy: "flow",
+                  },
+                );
                 actionElements.push(...noteElements);
                 break;
             }
           } catch (error) {
-            console.error('Failed to create canvas element:', error);
+            console.error("Failed to create canvas element:", error);
           }
         }
 
@@ -124,18 +149,23 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
         }
       }
 
-      setInput('');
+      setInput("");
     } catch (error) {
-      console.error('Chat on canvas error:', error);
+      console.error("Chat on canvas error:", error);
 
       // Show error bubble on canvas
       if (onCreateElements) {
-        const errorBubble = elementFactory.current.createChatBubble({
-          message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          role: 'assistant',
-        }, {
-          strategy: 'flow',
-        });
+        const errorBubble = elementFactory.current.createChatBubble(
+          {
+            message: `Error: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`,
+            role: "assistant",
+          },
+          {
+            strategy: "flow",
+          },
+        );
         onCreateElements(errorBubble);
       }
     } finally {
@@ -144,7 +174,7 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -174,12 +204,24 @@ export const ChatOnCanvas: React.FC<ChatOnCanvasProps> = ({
           {isLoading ? (
             <span className="flex items-center space-x-1">
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
             </span>
           ) : (
-            'Send'
+            "Send"
           )}
         </button>
       </div>

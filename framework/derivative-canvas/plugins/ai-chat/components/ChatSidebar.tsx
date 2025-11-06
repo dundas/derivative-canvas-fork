@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import type { PluginUIProps } from '../../../core/types';
-import type { Message, CanvasAction } from '../services/aiService';
-import { AIService } from '../services/aiService';
-import { ElementFactory } from '../utils/elementFactory';
+import React, { useState, useRef, useEffect } from "react";
+
+import { AIService } from "../services/aiService";
+
+import { ElementFactory } from "../utils/elementFactory";
+
+import type { PluginUIProps } from "../../../core/types";
+import type { Message, CanvasAction } from "../services/aiService";
 
 interface ChatSidebarProps extends PluginUIProps {
   onCreateElements?: (elements: any[]) => void;
@@ -15,18 +18,20 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   context,
   plugin,
   onCreateElements,
-  aiService: externalAiService
+  aiService: externalAiService,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [aiService] = useState(() => {
-    if (externalAiService) return externalAiService;
+    if (externalAiService) {
+      return externalAiService;
+    }
 
     // Initialize with config from plugin
     const config = plugin.config || {};
     return new AIService({
-      provider: config.aiProvider || 'custom',
+      provider: config.aiProvider || "custom",
       apiKey: config.apiKey,
       model: config.model,
       apiEndpoint: config.apiEndpoint,
@@ -35,19 +40,24 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const elementFactory = useRef(new ElementFactory({
-    elements: context.canvas.elements,
-    appState: context.canvas.appState,
-  }));
+  const elementFactory = useRef(
+    new ElementFactory({
+      elements: context.canvas.elements,
+      appState: context.canvas.appState,
+    }),
+  );
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Update AI service with canvas context
   useEffect(() => {
-    aiService.updateCanvasContext(context.canvas.elements, context.canvas.appState);
+    aiService.updateCanvasContext(
+      context.canvas.elements,
+      context.canvas.appState,
+    );
     elementFactory.current.updateContext({
       elements: context.canvas.elements,
       appState: context.canvas.appState,
@@ -55,16 +65,18 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   }, [context.canvas.elements, context.canvas.appState, aiService]);
 
   const handleSendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading) {
+      return;
+    }
 
     const userMessage: Message = {
-      role: 'user',
+      role: "user",
       content: input,
       timestamp: Date.now(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setIsLoading(true);
 
     try {
@@ -72,25 +84,27 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
       // Add AI response to messages
       const aiMessage: Message = {
-        role: 'assistant',
+        role: "assistant",
         content: response.message,
         timestamp: Date.now(),
         metadata: { actions: response.actions },
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
 
       // Execute canvas actions if any
       if (response.actions && onCreateElements) {
         executeCanvasActions(response.actions);
       }
     } catch (error) {
-      console.error('AI Chat error:', error);
+      console.error("AI Chat error:", error);
       const errorMessage: Message = {
-        role: 'assistant',
-        content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        role: "assistant",
+        content: `Sorry, I encountered an error: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
         timestamp: Date.now(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -102,41 +116,45 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
     for (const action of actions) {
       try {
         switch (action.type) {
-          case 'create-code':
+          case "create-code":
             const codeElements = elementFactory.current.createCodeBlock({
               code: action.data.code,
               language: action.data.language,
-              title: action.data.language ? `${action.data.language} Code` : 'Code',
+              title: action.data.language
+                ? `${action.data.language} Code`
+                : "Code",
             });
             newElements.push(...codeElements);
             break;
 
-          case 'create-terminal':
-            const terminalElements = elementFactory.current.createTerminalOutput({
-              output: action.data.output,
-              title: 'Terminal Output',
-            });
+          case "create-terminal":
+            const terminalElements =
+              elementFactory.current.createTerminalOutput({
+                output: action.data.output,
+                title: "Terminal Output",
+              });
             newElements.push(...terminalElements);
             break;
 
-          case 'create-note':
+          case "create-note":
             const noteElements = elementFactory.current.createNote({
               text: action.data.text,
-              color: 'yellow',
+              color: "yellow",
             });
             newElements.push(...noteElements);
             break;
 
-          case 'create-document':
-            const docElements = elementFactory.current.createDocumentPlaceholder(
-              action.data.title || 'Document',
-              action.data.type || 'file'
-            );
+          case "create-document":
+            const docElements =
+              elementFactory.current.createDocumentPlaceholder(
+                action.data.title || "Document",
+                action.data.type || "file",
+              );
             newElements.push(...docElements);
             break;
         }
       } catch (error) {
-        console.error('Failed to create element:', error);
+        console.error("Failed to create element:", error);
       }
     }
 
@@ -146,7 +164,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -185,7 +203,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
               Start a conversation
             </h4>
             <p className="text-xs text-gray-500 max-w-xs mx-auto">
-              Ask me to create code snippets, diagrams, notes, or help you with your canvas
+              Ask me to create code snippets, diagrams, notes, or help you with
+              your canvas
             </p>
             <div className="mt-4 space-y-2 text-xs text-gray-400">
               <p>Try: "Create a Python function to sort a list"</p>
@@ -198,17 +217,19 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${
+              message.role === "user" ? "justify-end" : "justify-start"
+            }`}
           >
             <div
               className={`max-w-[85%] rounded-lg px-4 py-2 ${
-                message.role === 'user'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                message.role === "user"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 text-gray-900"
               }`}
             >
               <div className="text-xs opacity-70 mb-1">
-                {message.role === 'user' ? 'You' : 'AI Assistant'}
+                {message.role === "user" ? "You" : "AI Assistant"}
               </div>
               <div className="text-sm whitespace-pre-wrap break-words">
                 {message.content}
@@ -228,9 +249,18 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <div className="text-xs opacity-70 mb-1">AI Assistant</div>
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0ms" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "150ms" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "300ms" }}
+                  ></div>
                 </div>
                 <span className="text-xs text-gray-500">Thinking...</span>
               </div>

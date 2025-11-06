@@ -1,4 +1,4 @@
-import type { FrameworkEvent } from './types';
+import type { FrameworkEvent } from "./types";
 
 export class EventEmitter {
   private events = new Map<FrameworkEvent, Set<Function>>();
@@ -23,7 +23,7 @@ export class EventEmitter {
   emit(event: FrameworkEvent, ...args: any[]): void {
     const handlers = this.events.get(event);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler(...args);
         } catch (error) {

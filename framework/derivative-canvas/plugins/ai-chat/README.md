@@ -45,21 +45,21 @@ yarn add @derivative-canvas/core
 ### Basic Configuration
 
 ```typescript
-import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
+import { AIChatPlugin } from "@derivative-canvas/core/plugins/ai-chat";
 
 // Configure the plugin
 const aiChatConfig = {
-  aiProvider: 'anthropic', // or 'openai' or 'custom'
+  aiProvider: "anthropic", // or 'openai' or 'custom'
   apiKey: process.env.ANTHROPIC_API_KEY,
-  model: 'claude-3-5-sonnet-20241022',
-  chatMode: 'sidebar', // or 'canvas'
+  model: "claude-3-5-sonnet-20241022",
+  chatMode: "sidebar", // or 'canvas'
 };
 
 // Register with Derivative Canvas
 const canvasConfig = {
   plugins: [
     {
-      pluginId: 'ai-chat',
+      pluginId: "ai-chat",
       enabled: true,
       config: aiChatConfig,
     },
@@ -70,15 +70,15 @@ const canvasConfig = {
 ### Using with Anthropic Claude
 
 ```typescript
-import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
+import { AIChatPlugin } from "@derivative-canvas/core/plugins/ai-chat";
 
 const plugin = {
   ...AIChatPlugin,
   config: {
-    aiProvider: 'anthropic',
+    aiProvider: "anthropic",
     apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
-    model: 'claude-3-5-sonnet-20241022',
-    chatMode: 'sidebar',
+    model: "claude-3-5-sonnet-20241022",
+    chatMode: "sidebar",
   },
 };
 ```
@@ -86,15 +86,15 @@ const plugin = {
 ### Using with OpenAI
 
 ```typescript
-import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
+import { AIChatPlugin } from "@derivative-canvas/core/plugins/ai-chat";
 
 const plugin = {
   ...AIChatPlugin,
   config: {
-    aiProvider: 'openai',
+    aiProvider: "openai",
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-    model: 'gpt-4',
-    chatMode: 'sidebar',
+    model: "gpt-4",
+    chatMode: "sidebar",
   },
 };
 ```
@@ -105,10 +105,10 @@ const plugin = {
 const plugin = {
   ...AIChatPlugin,
   config: {
-    aiProvider: 'custom',
-    apiEndpoint: 'https://your-api.com/chat',
-    apiKey: 'your-api-key',
-    chatMode: 'sidebar',
+    aiProvider: "custom",
+    apiEndpoint: "https://your-api.com/chat",
+    apiKey: "your-api-key",
+    chatMode: "sidebar",
   },
 };
 ```
@@ -118,8 +118,8 @@ const plugin = {
 ### Example 1: Chat in Sidebar
 
 ```typescript
-import { DerivativeCanvasLayout } from '@derivative-canvas/core';
-import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
+import { DerivativeCanvasLayout } from "@derivative-canvas/core";
+import { AIChatPlugin } from "@derivative-canvas/core/plugins/ai-chat";
 
 export default function CanvasPage() {
   return (
@@ -129,9 +129,9 @@ export default function CanvasPage() {
         {
           plugin: AIChatPlugin,
           config: {
-            aiProvider: 'anthropic',
+            aiProvider: "anthropic",
             apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
-            chatMode: 'sidebar',
+            chatMode: "sidebar",
           },
         },
       ]}
@@ -149,9 +149,9 @@ export default function CanvasPage() {
     {
       plugin: AIChatPlugin,
       config: {
-        aiProvider: 'anthropic',
+        aiProvider: "anthropic",
         apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
-        chatMode: 'canvas', // Messages appear as bubbles on canvas
+        chatMode: "canvas", // Messages appear as bubbles on canvas
       },
     },
   ]}
@@ -161,7 +161,7 @@ export default function CanvasPage() {
 ### Example 3: Programmatic Element Creation
 
 ```typescript
-import { ElementFactory } from '@derivative-canvas/core/plugins/ai-chat';
+import { ElementFactory } from "@derivative-canvas/core/plugins/ai-chat";
 
 // In your component
 const elementFactory = new ElementFactory({
@@ -172,20 +172,20 @@ const elementFactory = new ElementFactory({
 // Create a code block
 const codeBlock = elementFactory.createCodeBlock({
   code: 'const hello = "world";',
-  language: 'javascript',
-  title: 'Example Code',
+  language: "javascript",
+  title: "Example Code",
 });
 
 // Create a terminal output
 const terminal = elementFactory.createTerminalOutput({
-  output: '$ npm install\nInstalling packages...\nDone!',
-  title: 'Installation',
+  output: "$ npm install\nInstalling packages...\nDone!",
+  title: "Installation",
 });
 
 // Create a sticky note
 const note = elementFactory.createNote({
-  text: 'Remember to test this!',
-  color: 'yellow',
+  text: "Remember to test this!",
+  color: "yellow",
 });
 
 // Add to canvas
@@ -208,24 +208,21 @@ Users can interact with the AI using natural language:
 
 The AI uses special markers to create canvas elements:
 
-```
+````
 [ACTION:CODE]
 ```javascript
 function sortList(arr) {
   return arr.sort((a, b) => a - b);
 }
-```
+````
+
 [/ACTION]
 
-[ACTION:TERMINAL]
-$ node app.js
-Server running on port 3000
-[/ACTION]
+[ACTION:TERMINAL] $ node app.js Server running on port 3000 [/ACTION]
 
-[ACTION:NOTE]
-Remember to add error handling!
-[/ACTION]
-```
+[ACTION:NOTE] Remember to add error handling! [/ACTION]
+
+````
 
 ## Advanced Features
 
@@ -242,25 +239,21 @@ const plugin = {
     Focus on creating clear, organized visual representations.`,
   },
 };
-```
+````
 
 ### Placement Control
 
 ```typescript
-import { placementEngine } from '@derivative-canvas/core/plugins/ai-chat';
+import { placementEngine } from "@derivative-canvas/core/plugins/ai-chat";
 
 // Find optimal position with custom strategy
-const position = placementEngine.findOptimalPosition(
-  elements,
-  appState,
-  {
-    width: 400,
-    height: 300,
-    strategy: 'grid', // or 'flow', 'proximity', 'viewport-center'
-    avoidOverlap: true,
-    padding: 20,
-  }
-);
+const position = placementEngine.findOptimalPosition(elements, appState, {
+  width: 400,
+  height: 300,
+  strategy: "grid", // or 'flow', 'proximity', 'viewport-center'
+  avoidOverlap: true,
+  padding: 20,
+});
 ```
 
 ### Canvas Helpers
@@ -270,7 +263,7 @@ import {
   getCanvasSummary,
   getSelectedElements,
   findElementsWithText,
-} from '@derivative-canvas/core/plugins/ai-chat';
+} from "@derivative-canvas/core/plugins/ai-chat";
 
 // Get AI-friendly canvas summary
 const summary = getCanvasSummary(elements);
@@ -279,7 +272,7 @@ const summary = getCanvasSummary(elements);
 const selected = getSelectedElements(elements, appState);
 
 // Find elements containing specific text
-const found = findElementsWithText(elements, 'TODO');
+const found = findElementsWithText(elements, "TODO");
 ```
 
 ## API Reference
@@ -305,7 +298,10 @@ class ElementFactory {
   createTerminalOutput(options: TerminalOutputOptions): any[];
   createNote(options: NoteOptions): any[];
   createChatBubble(options: ChatBubbleOptions): any[];
-  createDocumentPlaceholder(title: string, type: 'pdf' | 'image' | 'file'): any[];
+  createDocumentPlaceholder(
+    title: string,
+    type: "pdf" | "image" | "file",
+  ): any[];
 }
 ```
 
@@ -316,7 +312,7 @@ class PlacementEngine {
   findOptimalPosition(
     elements: ExcalidrawElement[],
     appState: AppState,
-    options: PlacementOptions
+    options: PlacementOptions,
   ): PlacementResult;
 
   getBoundingBox(elements: ExcalidrawElement[]): BoundingBox | null;
@@ -329,7 +325,7 @@ class PlacementEngine {
 ```typescript
 interface AIChatConfig {
   // AI Provider
-  aiProvider: 'anthropic' | 'openai' | 'custom';
+  aiProvider: "anthropic" | "openai" | "custom";
 
   // API Configuration
   apiKey?: string;
@@ -337,7 +333,7 @@ interface AIChatConfig {
   apiEndpoint?: string;
 
   // Chat Mode
-  chatMode: 'sidebar' | 'canvas';
+  chatMode: "sidebar" | "canvas";
 
   // System Prompt
   systemPrompt?: string;

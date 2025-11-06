@@ -1,34 +1,39 @@
 "use client";
 
-import React, { useState } from 'react';
-import type { ExcalidrawPlugin, PluginUIProps } from '../../core/types';
+import React, { useState } from "react";
+
+import type { ExcalidrawPlugin, PluginUIProps } from "../../core/types";
 
 // AI Chat Sidebar Component
 const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<
+    Array<{ role: "user" | "assistant"; content: string }>
+  >([]);
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading) {
+      return;
+    }
 
-    const userMessage = { role: 'user' as const, content: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    const userMessage = { role: "user" as const, content: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setIsLoading(true);
 
     try {
       // Simulate AI response (replace with actual AI integration)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const aiResponse = {
-        role: 'assistant' as const,
-        content: `I can help you with your canvas! I see you have ${context.canvas.elements.length} elements on the canvas. What would you like to know or do?`
+        role: "assistant" as const,
+        content: `I can help you with your canvas! I see you have ${context.canvas.elements.length} elements on the canvas. What would you like to know or do?`,
       };
 
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages((prev) => [...prev, aiResponse]);
     } catch (error) {
-      console.error('AI Chat error:', error);
+      console.error("AI Chat error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -52,13 +57,11 @@ const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
           <div
             key={index}
             className={`p-3 rounded-lg ${
-              message.role === 'user'
-                ? 'bg-blue-100 ml-4'
-                : 'bg-gray-100 mr-4'
+              message.role === "user" ? "bg-blue-100 ml-4" : "bg-gray-100 mr-4"
             }`}
           >
             <div className="text-xs font-medium text-gray-600 mb-1">
-              {message.role === 'user' ? 'You' : 'AI Assistant'}
+              {message.role === "user" ? "You" : "AI Assistant"}
             </div>
             <div className="text-sm">{message.content}</div>
           </div>
@@ -66,7 +69,9 @@ const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
 
         {isLoading && (
           <div className="bg-gray-100 mr-4 p-3 rounded-lg">
-            <div className="text-xs font-medium text-gray-600 mb-1">AI Assistant</div>
+            <div className="text-xs font-medium text-gray-600 mb-1">
+              AI Assistant
+            </div>
             <div className="text-sm">Thinking...</div>
           </div>
         )}
@@ -78,7 +83,7 @@ const AIChatSidebar: React.FC<PluginUIProps> = ({ context, plugin }) => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
             placeholder="Ask about your canvas..."
             className="flex-1 px-3 py-2 border rounded-md text-sm"
             disabled={isLoading}
@@ -106,7 +111,12 @@ const AIChatButton: React.FC<PluginUIProps> = ({ context }) => {
       className="p-2 bg-white rounded-md shadow-sm border hover:bg-gray-50"
       title="AI Chat Assistant"
     >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -122,7 +132,9 @@ const AIChatButton: React.FC<PluginUIProps> = ({ context }) => {
 const AIChatDialog: React.FC<PluginUIProps> = ({ context, plugin }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -133,8 +145,18 @@ const AIChatDialog: React.FC<PluginUIProps> = ({ context, plugin }) => {
             onClick={() => setIsOpen(false)}
             className="text-gray-400 hover:text-gray-600"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -149,15 +171,15 @@ const AIChatDialog: React.FC<PluginUIProps> = ({ context, plugin }) => {
 
 // AI Chat Plugin Implementation
 export const AIChatPlugin: ExcalidrawPlugin = {
-  id: 'ai-chat',
-  name: 'AI Chat Assistant',
-  version: '1.0.0',
-  type: 'ai-chat',
+  id: "ai-chat",
+  name: "AI Chat Assistant",
+  version: "1.0.0",
+  type: "ai-chat",
 
   capabilities: {
     requiresAuth: true,
     requiresNetwork: true,
-    permissions: ['canvas:read', 'canvas:write'],
+    permissions: ["canvas:read", "canvas:write"],
   },
 
   ui: {
@@ -168,12 +190,13 @@ export const AIChatPlugin: ExcalidrawPlugin = {
 
   onElementsChange: (elements) => {
     // Update AI context when canvas changes
-    console.log('AI Chat: Canvas elements changed', elements.length);
+    console.log("AI Chat: Canvas elements changed", elements.length);
   },
 
   config: {
-    aiProvider: 'openai',
-    model: 'gpt-4',
-    systemPrompt: 'You are an AI assistant helping with canvas design and drawing. Provide helpful suggestions and answer questions about the drawing.',
+    aiProvider: "openai",
+    model: "gpt-4",
+    systemPrompt:
+      "You are an AI assistant helping with canvas design and drawing. Provide helpful suggestions and answer questions about the drawing.",
   },
 };

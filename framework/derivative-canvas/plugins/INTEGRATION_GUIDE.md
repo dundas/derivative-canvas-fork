@@ -15,10 +15,10 @@ The Derivative Canvas plugin ecosystem allows seamless integration between:
 ```typescript
 "use client";
 
-import { DerivativeCanvasLayout } from '@derivative-canvas/core';
-import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
-import { AudioInputPlugin } from '@derivative-canvas/core/plugins/audio-input';
-import { ScreenCapturePlugin } from '@derivative-canvas/core/plugins/screen-capture';
+import { DerivativeCanvasLayout } from "@derivative-canvas/core";
+import { AIChatPlugin } from "@derivative-canvas/core/plugins/ai-chat";
+import { AudioInputPlugin } from "@derivative-canvas/core/plugins/audio-input";
+import { ScreenCapturePlugin } from "@derivative-canvas/core/plugins/screen-capture";
 
 export default function FullyIntegratedCanvas() {
   return (
@@ -29,10 +29,10 @@ export default function FullyIntegratedCanvas() {
         {
           plugin: AIChatPlugin,
           config: {
-            aiProvider: 'anthropic', // Claude has vision + text
+            aiProvider: "anthropic", // Claude has vision + text
             apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
-            model: 'claude-3-5-sonnet-20241022',
-            chatMode: 'sidebar',
+            model: "claude-3-5-sonnet-20241022",
+            chatMode: "sidebar",
           },
         },
 
@@ -40,10 +40,10 @@ export default function FullyIntegratedCanvas() {
         {
           plugin: AudioInputPlugin,
           config: {
-            transcriptionProvider: 'openai',
+            transcriptionProvider: "openai",
             transcriptionApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-            recordingMode: 'toggle',
-            buttonPosition: 'bottom-right',
+            recordingMode: "toggle",
+            buttonPosition: "bottom-right",
             sendToAIChat: true,
             autoSubmit: true,
           },
@@ -53,9 +53,9 @@ export default function FullyIntegratedCanvas() {
         {
           plugin: ScreenCapturePlugin,
           config: {
-            mode: 'both',
-            videoQuality: 'medium',
-            buttonPosition: 'bottom-left',
+            mode: "both",
+            videoQuality: "medium",
+            buttonPosition: "bottom-left",
             autoAddToCanvas: true,
             sendToAIChat: true,
             enableVisionAnalysis: true,
@@ -129,15 +129,15 @@ NEXT_PUBLIC_DEEPGRAM_API_KEY=...
 
 ## Configuration Matrix
 
-| Feature | AI Chat | Audio Input | Screen Capture |
-|---------|---------|-------------|----------------|
-| API Required | ✅ | ✅ | ❌ |
-| Network | ✅ | ✅ | ❌* |
-| Permissions | None | Microphone | Screen/Camera |
-| Floating UI | ❌ | ✅ | ✅ |
-| Canvas Integration | ✅ | ✅ | ✅ |
+| Feature            | AI Chat | Audio Input | Screen Capture |
+| ------------------ | ------- | ----------- | -------------- |
+| API Required       | ✅      | ✅          | ❌             |
+| Network            | ✅      | ✅          | ❌\*           |
+| Permissions        | None    | Microphone  | Screen/Camera  |
+| Floating UI        | ❌      | ✅          | ✅             |
+| Canvas Integration | ✅      | ✅          | ✅             |
 
-*Network required only for AI analysis
+\*Network required only for AI analysis
 
 ## Event Communication
 
@@ -145,17 +145,17 @@ Plugins communicate via the framework event system:
 
 ```typescript
 // Audio Input → AI Chat
-context.framework.on('audio-input:transcription', (text) => {
+context.framework.on("audio-input:transcription", (text) => {
   // Send to AI Chat
 });
 
 // Screen Capture → AI Chat
-context.framework.on('screen-capture:screenshot', (event) => {
+context.framework.on("screen-capture:screenshot", (event) => {
   // Send image to AI for vision analysis
 });
 
 // AI Chat → Canvas
-context.framework.on('ai-chat:element-created', (elements) => {
+context.framework.on("ai-chat:element-created", (elements) => {
   // Elements automatically added to canvas
 });
 ```
@@ -245,17 +245,17 @@ Recommended button positions to avoid overlap:
 
 ```typescript
 // Listen for errors from any plugin
-context.framework.on('plugin:error', (event) => {
+context.framework.on("plugin:error", (event) => {
   console.error(`${event.plugin}: ${event.error.message}`);
 
   switch (event.plugin) {
-    case 'audio-input':
+    case "audio-input":
       // Show mic permission prompt
       break;
-    case 'screen-capture':
+    case "screen-capture":
       // Show screen share instructions
       break;
-    case 'ai-chat':
+    case "ai-chat":
       // Show API key error
       break;
   }
@@ -272,11 +272,11 @@ context.framework.on('plugin:error', (event) => {
 
 ## Mobile Considerations
 
-| Plugin | iOS Safari | Android Chrome |
-|--------|-----------|----------------|
-| AI Chat | ✅ | ✅ |
-| Audio Input | ⚠️ Limited | ✅ |
-| Screen Capture | ❌ | ⚠️ Limited |
+| Plugin         | iOS Safari | Android Chrome |
+| -------------- | ---------- | -------------- |
+| AI Chat        | ✅         | ✅             |
+| Audio Input    | ⚠️ Limited | ✅             |
+| Screen Capture | ❌         | ⚠️ Limited     |
 
 **Recommendation**: Provide fallback text input for mobile users.
 
@@ -285,20 +285,23 @@ context.framework.on('plugin:error', (event) => {
 ```typescript
 // Test audio input
 const testAudio = async () => {
-  const service = new AudioRecordingService({}, {
-    provider: 'openai',
-    apiKey: 'test-key',
-  });
+  const service = new AudioRecordingService(
+    {},
+    {
+      provider: "openai",
+      apiKey: "test-key",
+    },
+  );
 
   await service.initialize();
-  console.log('Microphone ready');
+  console.log("Microphone ready");
 };
 
 // Test screen capture
 const testScreen = async () => {
   const service = new ScreenCaptureService();
   const source = await service.startScreenCapture();
-  console.log('Screen sharing:', source.type);
+  console.log("Screen sharing:", source.type);
 };
 ```
 
@@ -310,7 +313,7 @@ const testScreen = async () => {
 
 ```typescript
 if (!context.framework) {
-  console.error('Framework context not available');
+  console.error("Framework context not available");
   return;
 }
 ```
@@ -323,7 +326,7 @@ if (!context.framework) {
 try {
   await service.initialize();
 } catch (error) {
-  if (error.message.includes('permission')) {
+  if (error.message.includes("permission")) {
     showPermissionInstructions();
   }
 }
@@ -335,10 +338,10 @@ try {
 
 ```typescript
 // Audio Input should emit
-context.framework.emit('audio-input:transcription', text);
+context.framework.emit("audio-input:transcription", text);
 
 // AI Chat should listen
-context.framework.on('audio-input:transcription', handleTranscription);
+context.framework.on("audio-input:transcription", handleTranscription);
 ```
 
 ## Next Steps
@@ -352,6 +355,7 @@ context.framework.on('audio-input:transcription', handleTranscription);
 ## Examples Repository
 
 See `/examples` directory for:
+
 - `multimodal-canvas.tsx` - Full integration
 - `voice-only-canvas.tsx` - Audio + AI Chat
 - `vision-canvas.tsx` - Screen + AI Chat

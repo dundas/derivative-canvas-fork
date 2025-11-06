@@ -26,8 +26,8 @@ yarn add @derivative-canvas/core
 ### Basic Usage
 
 ```typescript
-import { AudioInputPlugin } from '@derivative-canvas/core/plugins/audio-input';
-import { DerivativeCanvasLayout } from '@derivative-canvas/core';
+import { AudioInputPlugin } from "@derivative-canvas/core/plugins/audio-input";
+import { DerivativeCanvasLayout } from "@derivative-canvas/core";
 
 export default function CanvasPage() {
   return (
@@ -37,10 +37,10 @@ export default function CanvasPage() {
         {
           plugin: AudioInputPlugin,
           config: {
-            transcriptionProvider: 'openai',
+            transcriptionProvider: "openai",
             transcriptionApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-            recordingMode: 'toggle', // or 'push-to-talk'
-            buttonPosition: 'bottom-right',
+            recordingMode: "toggle", // or 'push-to-talk'
+            buttonPosition: "bottom-right",
           },
         },
       ]}
@@ -52,8 +52,8 @@ export default function CanvasPage() {
 ### With AI Chat Integration
 
 ```typescript
-import { AudioInputPlugin } from '@derivative-canvas/core/plugins/audio-input';
-import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
+import { AudioInputPlugin } from "@derivative-canvas/core/plugins/audio-input";
+import { AIChatPlugin } from "@derivative-canvas/core/plugins/ai-chat";
 
 <DerivativeCanvasLayout
   plugins={[
@@ -61,7 +61,7 @@ import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
     {
       plugin: AIChatPlugin,
       config: {
-        aiProvider: 'anthropic',
+        aiProvider: "anthropic",
         apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
       },
     },
@@ -69,14 +69,14 @@ import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
     {
       plugin: AudioInputPlugin,
       config: {
-        transcriptionProvider: 'openai',
+        transcriptionProvider: "openai",
         transcriptionApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
         sendToAIChat: true, // Send transcriptions to AI
         autoSubmit: true, // Auto-send to AI after transcription
       },
     },
   ]}
-/>
+/>;
 ```
 
 ## Transcription Providers
@@ -128,19 +128,19 @@ import { AIChatPlugin } from '@derivative-canvas/core/plugins/ai-chat';
 ```typescript
 interface AudioInputConfig {
   // Transcription
-  transcriptionProvider: 'openai' | 'deepgram' | 'azure' | 'custom';
+  transcriptionProvider: "openai" | "deepgram" | "azure" | "custom";
   transcriptionApiKey?: string;
   transcriptionModel?: string;
   transcriptionLanguage?: string;
   transcriptionApiEndpoint?: string;
 
   // Recording
-  recordingMode: 'push-to-talk' | 'toggle';
+  recordingMode: "push-to-talk" | "toggle";
   maxRecordingDuration?: number; // seconds, default 300 (5 min)
   autoStop?: boolean; // default true
 
   // UI
-  buttonPosition?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+  buttonPosition?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   showVisualizer?: boolean; // default true
 
   // AI Integration
@@ -157,7 +157,7 @@ Click once to start recording, click again to stop:
 
 ```typescript
 {
-  recordingMode: 'toggle'
+  recordingMode: "toggle";
 }
 ```
 
@@ -167,7 +167,7 @@ Hold to record, release to stop:
 
 ```typescript
 {
-  recordingMode: 'push-to-talk'
+  recordingMode: "push-to-talk";
 }
 ```
 
@@ -176,7 +176,7 @@ Hold to record, release to stop:
 ### Using the Service Directly
 
 ```typescript
-import { AudioRecordingService } from '@derivative-canvas/core/plugins/audio-input';
+import { AudioRecordingService } from "@derivative-canvas/core/plugins/audio-input";
 
 const service = new AudioRecordingService(
   {
@@ -185,22 +185,22 @@ const service = new AudioRecordingService(
     maxDuration: 300,
   },
   {
-    provider: 'openai',
-    apiKey: 'your-api-key',
-  }
+    provider: "openai",
+    apiKey: "your-api-key",
+  },
 );
 
 // Listen for events
-service.on('transcription', (result) => {
-  console.log('Transcribed:', result.text);
+service.on("transcription", (result) => {
+  console.log("Transcribed:", result.text);
 });
 
-service.on('audioLevel', (level) => {
-  console.log('Audio level:', level);
+service.on("audioLevel", (level) => {
+  console.log("Audio level:", level);
 });
 
-service.on('error', (error) => {
-  console.error('Error:', error);
+service.on("error", (error) => {
+  console.error("Error:", error);
 });
 
 // Start recording
@@ -219,14 +219,14 @@ The plugin emits events that can be listened to:
 
 ```typescript
 // Listen for transcription complete
-context.framework.on('audio-input:transcription', (text: string) => {
-  console.log('Voice input:', text);
+context.framework.on("audio-input:transcription", (text: string) => {
+  console.log("Voice input:", text);
 });
 
 // Listen for transcription events
-context.framework.on('transcription:complete', (event) => {
-  console.log('Transcription:', event.text);
-  console.log('Source:', event.source); // 'audio-input'
+context.framework.on("transcription:complete", (event) => {
+  console.log("Transcription:", event.text);
+  console.log("Source:", event.source); // 'audio-input'
 });
 ```
 
@@ -235,21 +235,21 @@ context.framework.on('transcription:complete', (event) => {
 ### Example 1: Voice Commands for Canvas
 
 ```typescript
-import { AudioInputPlugin } from '@derivative-canvas/core/plugins/audio-input';
+import { AudioInputPlugin } from "@derivative-canvas/core/plugins/audio-input";
 
 <DerivativeCanvasLayout
   plugins={[
     {
       plugin: AudioInputPlugin,
       config: {
-        transcriptionProvider: 'openai',
+        transcriptionProvider: "openai",
         transcriptionApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
         sendToAIChat: true,
         autoSubmit: true,
       },
     },
   ]}
-/>
+/>;
 
 // User says: "Create a code block with a hello world function"
 // → Transcribed automatically
@@ -280,12 +280,12 @@ import { AudioInputPlugin } from '@derivative-canvas/core/plugins/audio-input';
 
 ### FloatingAudio Button States
 
-| State | Appearance | Description |
-|-------|------------|-------------|
-| Idle | Blue | Ready to record |
-| Recording | Red (pulsing) | Currently recording |
-| Processing | Yellow (spinning) | Transcribing audio |
-| Error | Gray | Error occurred |
+| State      | Appearance        | Description         |
+| ---------- | ----------------- | ------------------- |
+| Idle       | Blue              | Ready to record     |
+| Recording  | Red (pulsing)     | Currently recording |
+| Processing | Yellow (spinning) | Transcribing audio  |
+| Error      | Gray              | Error occurred      |
 
 ### Visual Feedback
 
@@ -296,20 +296,21 @@ import { AudioInputPlugin } from '@derivative-canvas/core/plugins/audio-input';
 
 ## Browser Compatibility
 
-| Browser | Support | Notes |
-|---------|---------|-------|
-| Chrome | ✅ | Full support |
-| Firefox | ✅ | Full support |
-| Safari | ✅ | Requires HTTPS |
-| Edge | ✅ | Full support |
-| Mobile Safari | ⚠️ | Limited support |
-| Mobile Chrome | ✅ | Full support |
+| Browser       | Support | Notes           |
+| ------------- | ------- | --------------- |
+| Chrome        | ✅      | Full support    |
+| Firefox       | ✅      | Full support    |
+| Safari        | ✅      | Requires HTTPS  |
+| Edge          | ✅      | Full support    |
+| Mobile Safari | ⚠️      | Limited support |
+| Mobile Chrome | ✅      | Full support    |
 
 **Note**: Microphone access requires HTTPS in production.
 
 ## Permissions
 
 The plugin requires:
+
 - Microphone permission
 - Internet connection (for transcription)
 
@@ -318,16 +319,16 @@ Browser will prompt user for microphone access on first use.
 ## Error Handling
 
 ```typescript
-service.on('error', (error) => {
+service.on("error", (error) => {
   switch (error.message) {
-    case 'Failed to access microphone':
+    case "Failed to access microphone":
       // Permission denied or hardware issue
       break;
-    case 'OpenAI API error':
+    case "OpenAI API error":
       // Transcription API issue
       break;
     default:
-      console.error('Audio error:', error);
+      console.error("Audio error:", error);
   }
 });
 ```
@@ -378,7 +379,7 @@ service.on('error', (error) => {
 class AudioRecordingService {
   constructor(
     config: AudioRecordingConfig,
-    transcriptionConfig: TranscriptionConfig
+    transcriptionConfig: TranscriptionConfig,
   );
 
   initialize(): Promise<void>;

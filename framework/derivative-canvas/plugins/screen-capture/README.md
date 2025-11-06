@@ -21,30 +21,30 @@ npm install @derivative-canvas/core
 ## Quick Start
 
 ```typescript
-import { ScreenCapturePlugin } from '@derivative-canvas/core/plugins/screen-capture';
+import { ScreenCapturePlugin } from "@derivative-canvas/core/plugins/screen-capture";
 
 <DerivativeCanvasLayout
   plugins={[
     {
       plugin: ScreenCapturePlugin,
       config: {
-        mode: 'both', // 'screenshot', 'recording', or 'both'
-        videoQuality: 'medium', // 'low', 'medium', 'high'
-        buttonPosition: 'bottom-left',
+        mode: "both", // 'screenshot', 'recording', or 'both'
+        videoQuality: "medium", // 'low', 'medium', 'high'
+        buttonPosition: "bottom-left",
         autoAddToCanvas: true,
       },
     },
   ]}
-/>
+/>;
 ```
 
 ## Configuration
 
 ```typescript
 interface ScreenCaptureConfig {
-  mode: 'screenshot' | 'recording' | 'both';
-  videoQuality: 'low' | 'medium' | 'high';
-  buttonPosition: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+  mode: "screenshot" | "recording" | "both";
+  videoQuality: "low" | "medium" | "high";
+  buttonPosition: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   autoAddToCanvas: boolean;
   sendToAIChat: boolean;
   enableVisionAnalysis: boolean;
@@ -73,11 +73,11 @@ interface ScreenCaptureConfig {
 
 ## Video Quality Settings
 
-| Quality | Resolution | Frame Rate | Bitrate |
-|---------|-----------|------------|---------|
-| Low | 1280x720 | 15 fps | 2.5 Mbps |
-| Medium | 1920x1080 | 30 fps | 5 Mbps |
-| High | 2560x1440 | 60 fps | 10 Mbps |
+| Quality | Resolution | Frame Rate | Bitrate  |
+| ------- | ---------- | ---------- | -------- |
+| Low     | 1280x720   | 15 fps     | 2.5 Mbps |
+| Medium  | 1920x1080  | 30 fps     | 5 Mbps   |
+| High    | 2560x1440  | 60 fps     | 10 Mbps  |
 
 ## With AI Chat Integration
 
@@ -94,7 +94,7 @@ interface ScreenCaptureConfig {
     {
       plugin: AIChatPlugin,
       config: {
-        aiProvider: 'anthropic', // Claude has vision capabilities
+        aiProvider: "anthropic", // Claude has vision capabilities
         apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
       },
     },
@@ -106,38 +106,38 @@ interface ScreenCaptureConfig {
 
 ```typescript
 // Screenshot captured
-context.framework.on('screenshot:captured', (event) => {
-  console.log('Screenshot:', event.dataUrl);
+context.framework.on("screenshot:captured", (event) => {
+  console.log("Screenshot:", event.dataUrl);
 });
 
 // Video recorded
-context.framework.on('video:recorded', (event) => {
-  console.log('Video:', event.blob.size, 'bytes');
+context.framework.on("video:recorded", (event) => {
+  console.log("Video:", event.blob.size, "bytes");
 });
 
 // Capture started
-context.framework.on('capture:started', (event) => {
-  console.log('Capture type:', event.type); // 'screen', 'window', 'tab', 'camera'
+context.framework.on("capture:started", (event) => {
+  console.log("Capture type:", event.type); // 'screen', 'window', 'tab', 'camera'
 });
 ```
 
 ## Programmatic Usage
 
 ```typescript
-import { ScreenCaptureService } from '@derivative-canvas/core/plugins/screen-capture';
+import { ScreenCaptureService } from "@derivative-canvas/core/plugins/screen-capture";
 
 const service = new ScreenCaptureService({
-  videoQuality: 'high',
+  videoQuality: "high",
   captureAudio: true,
 });
 
 // Start screen capture
 const source = await service.startScreenCapture();
-console.log('Capturing:', source.type);
+console.log("Capturing:", source.type);
 
 // Take screenshot
 const dataUrl = await service.captureScreenshot({
-  format: 'png',
+  format: "png",
   quality: 0.95,
 });
 
@@ -154,11 +154,11 @@ service.stopCapture();
 ## Browser Support
 
 | Browser | Screen Capture | Video Recording |
-|---------|---------------|-----------------|
-| Chrome | ✅ | ✅ |
-| Firefox | ✅ | ✅ |
-| Safari | ✅ | ⚠️ Limited |
-| Edge | ✅ | ✅ |
+| ------- | -------------- | --------------- |
+| Chrome  | ✅             | ✅              |
+| Firefox | ✅             | ✅              |
+| Safari  | ✅             | ⚠️ Limited      |
+| Edge    | ✅             | ✅              |
 
 **Note**: Requires HTTPS in production.
 
@@ -179,16 +179,19 @@ service.stopCapture();
 ## Troubleshooting
 
 ### Can't Share Screen
+
 - Ensure HTTPS (required)
 - Check browser permissions
 - Try different browser
 
 ### Recording Not Working
+
 - Verify browser supports MediaRecorder API
 - Check available disk space
 - Reduce video quality
 
 ### Large File Sizes
+
 - Use lower quality setting
 - Shorten recording duration
 - Disable audio if not needed

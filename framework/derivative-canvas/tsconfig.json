@@ -18,18 +18,6 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "include": [
-    "index.ts",
-    "core/**/*",
-    "layouts/**/*",
-    "plugins/**/*",
-    "utils/**/*",
-    "types/**/*"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "include": ["index.ts", "core/**/*", "layouts/**/*", "plugins/**/*", "utils/**/*", "types/**/*"],
+  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]
 }

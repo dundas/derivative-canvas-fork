@@ -1,15 +1,17 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
+
+import { PluginManager } from "./PluginManager";
+import { EventEmitter } from "./EventEmitter";
+
 import type {
   ExcalidrawFrameworkConfig,
   ExcalidrawFrameworkAPI,
   User,
   PluginContext,
-  FrameworkEvent
-} from './types';
-import { PluginManager } from './PluginManager';
-import { EventEmitter } from './EventEmitter';
+  FrameworkEvent,
+} from "./types";
 
 interface ExcalidrawFrameworkContextType {
   config: ExcalidrawFrameworkConfig;
@@ -19,12 +21,15 @@ interface ExcalidrawFrameworkContextType {
   error: Error | null;
 }
 
-const ExcalidrawFrameworkContext = createContext<ExcalidrawFrameworkContextType | null>(null);
+const ExcalidrawFrameworkContext =
+  createContext<ExcalidrawFrameworkContextType | null>(null);
 
 export const useExcalidrawFramework = () => {
   const context = useContext(ExcalidrawFrameworkContext);
   if (!context) {
-    throw new Error('useExcalidrawFramework must be used within ExcalidrawProvider');
+    throw new Error(
+      "useExcalidrawFramework must be used within ExcalidrawProvider",
+    );
   }
   return context;
 };
@@ -36,7 +41,7 @@ interface ExcalidrawProviderProps {
 
 export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
   children,
-  config
+  config,
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +57,9 @@ export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
         const currentUser = await config.auth.adapter.getCurrentUser();
         setUser(currentUser);
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Auth initialization failed'));
+        setError(
+          err instanceof Error ? err : new Error("Auth initialization failed"),
+        );
       } finally {
         setIsLoading(false);
       }
@@ -72,7 +79,7 @@ export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
           }
         }
       } catch (err) {
-        console.error('Plugin initialization failed:', err);
+        console.error("Plugin initialization failed:", err);
       }
     };
 
@@ -86,14 +93,14 @@ export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
     // Plugin management
     registerPlugin: (plugin) => {
       pluginManager.register(plugin);
-      eventEmitter.emit('plugin:mounted', plugin);
+      eventEmitter.emit("plugin:mounted", plugin);
     },
 
     unregisterPlugin: (pluginId) => {
       const plugin = pluginManager.get(pluginId);
       if (plugin) {
         pluginManager.unregister(pluginId);
-        eventEmitter.emit('plugin:unmounted', plugin);
+        eventEmitter.emit("plugin:unmounted", plugin);
       }
     },
 
@@ -104,12 +111,12 @@ export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
     // Canvas operations (to be implemented with Excalidraw integration)
     updateElements: (elements) => {
       // Implementation depends on Excalidraw instance
-      eventEmitter.emit('elements:changed', elements);
+      eventEmitter.emit("elements:changed", elements);
     },
 
     updateAppState: (appState) => {
       // Implementation depends on Excalidraw instance
-      eventEmitter.emit('appstate:changed', appState);
+      eventEmitter.emit("appstate:changed", appState);
     },
 
     addElement: (element) => {
@@ -126,18 +133,25 @@ export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
 
     // Storage operations
     saveCanvas: async (name) => {
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
       // Implementation depends on current canvas state
       const canvasId = Date.now().toString(); // temporary
-      eventEmitter.emit('canvas:saved', canvasId);
+      eventEmitter.emit("canvas:saved", canvasId);
       return canvasId;
     },
 
     loadCanvas: async (canvasId) => {
-      if (!user) throw new Error('User not authenticated');
-      const canvasData = await config.storage.adapter.loadCanvas(user.id, canvasId);
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+      const canvasData = await config.storage.adapter.loadCanvas(
+        user.id,
+        canvasId,
+      );
       if (canvasData) {
-        eventEmitter.emit('canvas:loaded', canvasData);
+        eventEmitter.emit("canvas:loaded", canvasData);
       }
     },
 
@@ -146,7 +160,9 @@ export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
     },
 
     duplicateCanvas: async (canvasId) => {
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
       // Load canvas and save as new
       const newId = Date.now().toString(); // temporary
       return newId;
@@ -154,15 +170,19 @@ export const ExcalidrawProvider: React.FC<ExcalidrawProviderProps> = ({
 
     // Collaboration
     shareCanvas: async (permissions) => {
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
       // Generate share link
       const shareId = Date.now().toString(); // temporary
-      eventEmitter.emit('canvas:shared', shareId);
+      eventEmitter.emit("canvas:shared", shareId);
       return shareId;
     },
 
     inviteCollaborator: async (email, permission) => {
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
       // Send invitation
     },
 

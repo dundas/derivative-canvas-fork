@@ -2,8 +2,8 @@ import type {
   StorageAdapter,
   CanvasData,
   CanvasMetadata,
-  SharePermissions
-} from '../../core/types';
+  SharePermissions,
+} from "../../core/types";
 
 interface MongoDBConfig {
   connectionString: string;
@@ -14,17 +14,17 @@ interface MongoDBConfig {
 export const createMongoDBAdapter = (config: MongoDBConfig): StorageAdapter => {
   const {
     connectionString,
-    databaseName = 'excalidraw',
-    collectionName = 'canvases'
+    databaseName = "excalidraw",
+    collectionName = "canvases",
   } = config;
 
   // Base API URL for MongoDB operations
-  const apiBase = '/api/excalidraw/storage';
+  const apiBase = "/api/excalidraw/storage";
 
   const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     const response = await fetch(`${apiBase}${endpoint}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
       ...options,
@@ -39,9 +39,13 @@ export const createMongoDBAdapter = (config: MongoDBConfig): StorageAdapter => {
   };
 
   return {
-    saveCanvas: async (userId: string, canvasId: string, data: CanvasData): Promise<void> => {
-      await makeRequest('/save', {
-        method: 'POST',
+    saveCanvas: async (
+      userId: string,
+      canvasId: string,
+      data: CanvasData,
+    ): Promise<void> => {
+      await makeRequest("/save", {
+        method: "POST",
         body: JSON.stringify({
           userId,
           canvasId,
@@ -53,12 +57,17 @@ export const createMongoDBAdapter = (config: MongoDBConfig): StorageAdapter => {
       });
     },
 
-    loadCanvas: async (userId: string, canvasId: string): Promise<CanvasData | null> => {
+    loadCanvas: async (
+      userId: string,
+      canvasId: string,
+    ): Promise<CanvasData | null> => {
       try {
-        const result = await makeRequest(`/load?userId=${userId}&canvasId=${canvasId}`);
+        const result = await makeRequest(
+          `/load?userId=${userId}&canvasId=${canvasId}`,
+        );
         return result.canvas || null;
       } catch (error) {
-        if (error instanceof Error && error.message.includes('not found')) {
+        if (error instanceof Error && error.message.includes("not found")) {
           return null;
         }
         throw error;
@@ -71,15 +80,19 @@ export const createMongoDBAdapter = (config: MongoDBConfig): StorageAdapter => {
     },
 
     deleteCanvas: async (userId: string, canvasId: string): Promise<void> => {
-      await makeRequest('/delete', {
-        method: 'DELETE',
+      await makeRequest("/delete", {
+        method: "DELETE",
         body: JSON.stringify({ userId, canvasId }),
       });
     },
 
-    shareCanvas: async (userId: string, canvasId: string, permissions: SharePermissions): Promise<string> => {
-      const result = await makeRequest('/share', {
-        method: 'POST',
+    shareCanvas: async (
+      userId: string,
+      canvasId: string,
+      permissions: SharePermissions,
+    ): Promise<string> => {
+      const result = await makeRequest("/share", {
+        method: "POST",
         body: JSON.stringify({
           userId,
           canvasId,
@@ -105,42 +118,42 @@ export const createMongoDBAPIRoutes = () => {
       // Implementation would depend on your MongoDB client (mongoose, mongodb driver, etc.)
 
       return new Response(JSON.stringify({ success: true }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     },
 
     // Load canvas
     load: async (req: Request) => {
       const url = new URL(req.url);
-      const userId = url.searchParams.get('userId');
-      const canvasId = url.searchParams.get('canvasId');
+      const userId = url.searchParams.get("userId");
+      const canvasId = url.searchParams.get("canvasId");
 
       if (!userId || !canvasId) {
-        return new Response('Missing parameters', { status: 400 });
+        return new Response("Missing parameters", { status: 400 });
       }
 
       // Connect to MongoDB and load
       // Implementation would depend on your MongoDB client
 
       return new Response(JSON.stringify({ canvas: null }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     },
 
     // List canvases
     list: async (req: Request) => {
       const url = new URL(req.url);
-      const userId = url.searchParams.get('userId');
+      const userId = url.searchParams.get("userId");
 
       if (!userId) {
-        return new Response('Missing userId', { status: 400 });
+        return new Response("Missing userId", { status: 400 });
       }
 
       // Connect to MongoDB and list
       // Implementation would depend on your MongoDB client
 
       return new Response(JSON.stringify({ canvases: [] }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     },
 
@@ -152,7 +165,7 @@ export const createMongoDBAPIRoutes = () => {
       // Implementation would depend on your MongoDB client
 
       return new Response(JSON.stringify({ success: true }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     },
 
@@ -166,7 +179,7 @@ export const createMongoDBAPIRoutes = () => {
       const shareId = `share_${Date.now()}`;
 
       return new Response(JSON.stringify({ shareId }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     },
   };
@@ -174,21 +187,21 @@ export const createMongoDBAPIRoutes = () => {
 
 // Example MongoDB schema for canvas storage
 export const canvasSchema = {
-  _id: 'ObjectId',
-  canvasId: 'String', // Unique canvas identifier
-  userId: 'String', // Owner user ID
-  name: 'String',
-  elements: 'Array', // Excalidraw elements
-  appState: 'Object', // Excalidraw app state
-  files: 'Object', // Binary files
-  createdAt: 'Date',
-  updatedAt: 'Date',
-  metadata: 'Object', // Additional metadata
-  isPublic: 'Boolean',
-  collaborators: ['String'], // Array of user IDs
+  _id: "ObjectId",
+  canvasId: "String", // Unique canvas identifier
+  userId: "String", // Owner user ID
+  name: "String",
+  elements: "Array", // Excalidraw elements
+  appState: "Object", // Excalidraw app state
+  files: "Object", // Binary files
+  createdAt: "Date",
+  updatedAt: "Date",
+  metadata: "Object", // Additional metadata
+  isPublic: "Boolean",
+  collaborators: ["String"], // Array of user IDs
   shareSettings: {
-    shareId: 'String',
-    permissions: 'Object',
-    expiresAt: 'Date',
+    shareId: "String",
+    permissions: "Object",
+    expiresAt: "Date",
   },
 };

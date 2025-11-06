@@ -1,4 +1,4 @@
-import type { ExcalidrawPlugin, PluginContext } from './types';
+import type { ExcalidrawPlugin, PluginContext } from "./types";
 
 export class PluginManager {
   private plugins = new Map<string, ExcalidrawPlugin>();
@@ -56,7 +56,7 @@ export class PluginManager {
     }
 
     if (!this.context) {
-      throw new Error('Plugin context not available');
+      throw new Error("Plugin context not available");
     }
 
     // Check permissions
@@ -104,12 +104,12 @@ export class PluginManager {
     return Array.from(this.plugins.values());
   }
 
-  getByType(type: ExcalidrawPlugin['type']): ExcalidrawPlugin[] {
-    return this.list().filter(plugin => plugin.type === type);
+  getByType(type: ExcalidrawPlugin["type"]): ExcalidrawPlugin[] {
+    return this.list().filter((plugin) => plugin.type === type);
   }
 
   getMounted(): ExcalidrawPlugin[] {
-    return Array.from(this.mountedPlugins).map(id => this.plugins.get(id)!);
+    return Array.from(this.mountedPlugins).map((id) => this.plugins.get(id)!);
   }
 
   isMounted(pluginId: string): boolean {
@@ -214,36 +214,48 @@ export class PluginManager {
 
   private validatePlugin(plugin: ExcalidrawPlugin): void {
     if (!plugin.id) {
-      throw new Error('Plugin must have an id');
+      throw new Error("Plugin must have an id");
     }
 
     if (!plugin.name) {
-      throw new Error('Plugin must have a name');
+      throw new Error("Plugin must have a name");
     }
 
     if (!plugin.version) {
-      throw new Error('Plugin must have a version');
+      throw new Error("Plugin must have a version");
     }
 
     if (!plugin.type) {
-      throw new Error('Plugin must have a type');
+      throw new Error("Plugin must have a type");
     }
 
     // Validate plugin type
-    const validTypes = ['ai-chat', 'media-input', 'integration', 'ui-enhancement', 'workflow'];
+    const validTypes = [
+      "ai-chat",
+      "media-input",
+      "integration",
+      "ui-enhancement",
+      "workflow",
+    ];
     if (!validTypes.includes(plugin.type)) {
       throw new Error(`Invalid plugin type: ${plugin.type}`);
     }
 
     // Validate capabilities
     if (!plugin.capabilities) {
-      throw new Error('Plugin must define capabilities');
+      throw new Error("Plugin must define capabilities");
     }
 
     // Validate UI components
     if (plugin.ui) {
       const uiKeys = Object.keys(plugin.ui);
-      const validUIKeys = ['toolbar', 'sidebar', 'dialogs', 'contextMenu', 'overlay'];
+      const validUIKeys = [
+        "toolbar",
+        "sidebar",
+        "dialogs",
+        "contextMenu",
+        "overlay",
+      ];
       for (const key of uiKeys) {
         if (!validUIKeys.includes(key)) {
           throw new Error(`Invalid UI component type: ${key}`);

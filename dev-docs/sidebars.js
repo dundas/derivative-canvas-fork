@@ -27,9 +27,7 @@ const sidebars = {
       type: "category",
       label: "Framework",
       collapsed: false,
-      items: [
-        "framework/overview",
-      ],
+      items: ["framework/overview"],
     },
     {
       type: "category",

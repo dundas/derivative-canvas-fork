@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
-import dynamic from 'next/dynamic';
-import { useExcalidrawFramework } from '../core/ExcalidrawProvider';
-import type { LayoutProps } from '../core/types';
+import React, { useState } from "react";
+import dynamic from "next/dynamic";
+
+import { useExcalidrawFramework } from "../core/ExcalidrawProvider";
+
+import type { LayoutProps } from "../core/types";
 
 // Dynamically import Excalidraw to avoid SSR issues
 const Excalidraw = dynamic(
@@ -17,19 +19,19 @@ const Excalidraw = dynamic(
       <div className="flex items-center justify-center h-full">
         <div className="text-lg">Loading Excalidraw...</div>
       </div>
-    )
-  }
+    ),
+  },
 );
 
 interface ExcalidrawLayoutProps extends LayoutProps {
-  layoutType?: 'canvas' | 'hybrid' | 'minimal';
+  layoutType?: "canvas" | "hybrid" | "minimal";
   canvasId?: string;
-  onViewToggle?: (view: 'canvas' | 'traditional') => void;
+  onViewToggle?: (view: "canvas" | "traditional") => void;
 }
 
 export const ExcalidrawLayout: React.FC<ExcalidrawLayoutProps> = ({
   children,
-  layoutType = 'canvas',
+  layoutType = "canvas",
   showHeader = true,
   showToolbar = true,
   showSidebar = false,
@@ -40,7 +42,9 @@ export const ExcalidrawLayout: React.FC<ExcalidrawLayoutProps> = ({
   sidebarComponent: SidebarComponent,
 }) => {
   const { user, isLoading, error } = useExcalidrawFramework();
-  const [currentView, setCurrentView] = useState<'canvas' | 'traditional'>('canvas');
+  const [currentView, setCurrentView] = useState<"canvas" | "traditional">(
+    "canvas",
+  );
 
   // Auth guard
   if (isLoading) {
@@ -67,39 +71,43 @@ export const ExcalidrawLayout: React.FC<ExcalidrawLayoutProps> = ({
     );
   }
 
-  const handleViewToggle = (view: 'canvas' | 'traditional') => {
+  const handleViewToggle = (view: "canvas" | "traditional") => {
     setCurrentView(view);
     onViewToggle?.(view);
   };
 
   switch (layoutType) {
-    case 'canvas':
-      return <CanvasLayout
-        showHeader={showHeader}
-        showToolbar={showToolbar}
-        showSidebar={showSidebar}
-        HeaderComponent={HeaderComponent}
-        ToolbarComponent={ToolbarComponent}
-        SidebarComponent={SidebarComponent}
-        canvasId={canvasId}
-      />;
+    case "canvas":
+      return (
+        <CanvasLayout
+          showHeader={showHeader}
+          showToolbar={showToolbar}
+          showSidebar={showSidebar}
+          HeaderComponent={HeaderComponent}
+          ToolbarComponent={ToolbarComponent}
+          SidebarComponent={SidebarComponent}
+          canvasId={canvasId}
+        />
+      );
 
-    case 'hybrid':
-      return <HybridLayout
-        currentView={currentView}
-        onViewToggle={handleViewToggle}
-        showHeader={showHeader}
-        showToolbar={showToolbar}
-        showSidebar={showSidebar}
-        HeaderComponent={HeaderComponent}
-        ToolbarComponent={ToolbarComponent}
-        SidebarComponent={SidebarComponent}
-        canvasId={canvasId}
-      >
-        {children}
-      </HybridLayout>;
+    case "hybrid":
+      return (
+        <HybridLayout
+          currentView={currentView}
+          onViewToggle={handleViewToggle}
+          showHeader={showHeader}
+          showToolbar={showToolbar}
+          showSidebar={showSidebar}
+          HeaderComponent={HeaderComponent}
+          ToolbarComponent={ToolbarComponent}
+          SidebarComponent={SidebarComponent}
+          canvasId={canvasId}
+        >
+          {children}
+        </HybridLayout>
+      );
 
-    case 'minimal':
+    case "minimal":
       return <MinimalLayout canvasId={canvasId} />;
 
     default:
@@ -157,8 +165,8 @@ const CanvasLayout: React.FC<{
 // Hybrid layout with view toggle
 const HybridLayout: React.FC<{
   children: React.ReactNode;
-  currentView: 'canvas' | 'traditional';
-  onViewToggle: (view: 'canvas' | 'traditional') => void;
+  currentView: "canvas" | "traditional";
+  onViewToggle: (view: "canvas" | "traditional") => void;
   showHeader?: boolean;
   showToolbar?: boolean;
   showSidebar?: boolean;
@@ -182,28 +190,26 @@ const HybridLayout: React.FC<{
     <div className="h-screen flex flex-col">
       {showHeader && (
         <header className="h-16 border-b flex items-center justify-between px-4 bg-white">
-          <div>
-            {HeaderComponent ? <HeaderComponent /> : <DefaultHeader />}
-          </div>
+          <div>{HeaderComponent ? <HeaderComponent /> : <DefaultHeader />}</div>
 
           {/* View Toggle */}
           <div className="flex rounded-lg border p-1">
             <button
-              onClick={() => onViewToggle('traditional')}
+              onClick={() => onViewToggle("traditional")}
               className={`px-3 py-1 rounded text-sm ${
-                currentView === 'traditional'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-600 hover:text-gray-900'
+                currentView === "traditional"
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Traditional
             </button>
             <button
-              onClick={() => onViewToggle('canvas')}
+              onClick={() => onViewToggle("canvas")}
               className={`px-3 py-1 rounded text-sm ${
-                currentView === 'canvas'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-600 hover:text-gray-900'
+                currentView === "canvas"
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Canvas
@@ -213,10 +219,8 @@ const HybridLayout: React.FC<{
       )}
 
       <div className="flex-1">
-        {currentView === 'traditional' ? (
-          <div className="h-full">
-            {children}
-          </div>
+        {currentView === "traditional" ? (
+          <div className="h-full">{children}</div>
         ) : (
           <CanvasLayout
             showHeader={false}
@@ -255,8 +259,8 @@ const ExcalidrawCanvas: React.FC<{ canvasId?: string }> = ({ canvasId }) => {
 
   const handleChange = (elements: any, appState: any, files: any) => {
     // Notify plugin manager
-    api.emit('elements:changed', elements);
-    api.emit('appstate:changed', appState);
+    api.emit("elements:changed", elements);
+    api.emit("appstate:changed", appState);
   };
 
   return (

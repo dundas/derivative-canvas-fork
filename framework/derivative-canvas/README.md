@@ -27,25 +27,23 @@ yarn add @derivative-canvas/core @excalidraw/excalidraw
 1. **Configure your app layout** (`app/layout.tsx`):
 
 ```typescript
-import { DerivativeCanvasProvider } from '@derivative-canvas/core';
-import { createNextAuthAdapter } from '@derivative-canvas/core/auth';
-import { createMongoDBAdapter } from '@derivative-canvas/core/storage';
+import { DerivativeCanvasProvider } from "@derivative-canvas/core";
+import { createNextAuthAdapter } from "@derivative-canvas/core/auth";
+import { createMongoDBAdapter } from "@derivative-canvas/core/storage";
 
 const canvasConfig = {
   auth: {
-    provider: 'nextauth',
-    adapter: createNextAuthAdapter()
+    provider: "nextauth",
+    adapter: createNextAuthAdapter(),
   },
   storage: {
-    provider: 'mongodb',
+    provider: "mongodb",
     adapter: createMongoDBAdapter({
-      connectionString: process.env.MONGODB_URI!
-    })
+      connectionString: process.env.MONGODB_URI!,
+    }),
   },
-  plugins: [
-    { pluginId: 'ai-chat', enabled: true },
-  ],
-  layout: 'hybrid' // 'canvas' | 'hybrid' | 'minimal'
+  plugins: [{ pluginId: "ai-chat", enabled: true }],
+  layout: "hybrid", // 'canvas' | 'hybrid' | 'minimal'
 };
 
 export default function RootLayout({ children }) {
@@ -64,7 +62,7 @@ export default function RootLayout({ children }) {
 2. **Create a canvas route** (`app/canvas/page.tsx`):
 
 ```typescript
-import { DerivativeCanvasLayout } from '@derivative-canvas/core';
+import { DerivativeCanvasLayout } from "@derivative-canvas/core";
 
 export default function CanvasPage() {
   return (
@@ -82,7 +80,7 @@ export default function CanvasPage() {
 3. **Add API routes for storage** (`app/api/derivative-canvas/[...operation]/route.ts`):
 
 ```typescript
-import { createMongoDBAPIRoutes } from '@derivative-canvas/core/storage';
+import { createMongoDBAPIRoutes } from "@derivative-canvas/core/storage";
 
 const routes = createMongoDBAPIRoutes();
 
@@ -113,37 +111,38 @@ export async function DELETE(req: Request) {
 ### Creating Custom Plugins
 
 ```typescript
-import type { DerivativeCanvasPlugin } from '@derivative-canvas/core';
+import type { DerivativeCanvasPlugin } from "@derivative-canvas/core";
 
 export const MyCustomPlugin: DerivativeCanvasPlugin = {
-  id: 'my-custom-plugin',
-  name: 'My Custom Plugin',
-  version: '1.0.0',
-  type: 'ui-enhancement',
+  id: "my-custom-plugin",
+  name: "My Custom Plugin",
+  version: "1.0.0",
+  type: "ui-enhancement",
 
   capabilities: {
     requiresAuth: true,
-    permissions: ['canvas:read', 'canvas:write']
+    permissions: ["canvas:read", "canvas:write"],
   },
 
   ui: {
     toolbar: [MyToolbarButton],
-    sidebar: [MySidebarPanel]
+    sidebar: [MySidebarPanel],
   },
 
   onElementsChange: (elements) => {
-    console.log('Canvas updated:', elements.length);
+    console.log("Canvas updated:", elements.length);
   },
 
   config: {
     // Plugin-specific configuration
-  }
+  },
 };
 ```
 
 ## 🎨 Layout Options
 
 ### 1. Canvas Layout
+
 Full canvas experience with optional header, toolbar, and sidebar:
 
 ```typescript
@@ -156,12 +155,13 @@ Full canvas experience with optional header, toolbar, and sidebar:
 ```
 
 ### 2. Hybrid Layout
+
 Toggle between traditional and canvas views:
 
 ```typescript
 <DerivativeCanvasLayout
   layoutType="hybrid"
-  onViewToggle={(view) => console.log('Switched to:', view)}
+  onViewToggle={(view) => console.log("Switched to:", view)}
 >
   {/* Traditional view content */}
   <YourExistingApp />
@@ -169,6 +169,7 @@ Toggle between traditional and canvas views:
 ```
 
 ### 3. Minimal Layout
+
 Just the canvas with no additional UI:
 
 ```typescript
@@ -180,33 +181,41 @@ Just the canvas with no additional UI:
 ### NextAuth Integration
 
 ```typescript
-import { createNextAuthAdapter } from '@derivative-canvas/core/auth';
+import { createNextAuthAdapter } from "@derivative-canvas/core/auth";
 
 const authConfig = {
   auth: {
-    provider: 'nextauth',
+    provider: "nextauth",
     adapter: createNextAuthAdapter({
-      signInPage: '/auth/signin',
-      apiRoute: '/api/auth'
-    })
-  }
+      signInPage: "/auth/signin",
+      apiRoute: "/api/auth",
+    }),
+  },
 };
 ```
 
 ### Custom Auth Provider
 
 ```typescript
-import type { AuthAdapter } from '@derivative-canvas/core';
+import type { AuthAdapter } from "@derivative-canvas/core";
 
 const customAuthAdapter: AuthAdapter = {
   getCurrentUser: async () => {
     // Your auth logic
     return user;
   },
-  signIn: async () => { /* ... */ },
-  signOut: async () => { /* ... */ },
-  getToken: async () => { /* ... */ },
-  isAuthenticated: async () => { /* ... */ }
+  signIn: async () => {
+    /* ... */
+  },
+  signOut: async () => {
+    /* ... */
+  },
+  getToken: async () => {
+    /* ... */
+  },
+  isAuthenticated: async () => {
+    /* ... */
+  },
 };
 ```
 
@@ -215,31 +224,41 @@ const customAuthAdapter: AuthAdapter = {
 ### MongoDB
 
 ```typescript
-import { createMongoDBAdapter } from '@derivative-canvas/core/storage';
+import { createMongoDBAdapter } from "@derivative-canvas/core/storage";
 
 const storageConfig = {
   storage: {
-    provider: 'mongodb',
+    provider: "mongodb",
     adapter: createMongoDBAdapter({
       connectionString: process.env.MONGODB_URI!,
-      databaseName: 'my-app',
-      collectionName: 'canvases'
-    })
-  }
+      databaseName: "my-app",
+      collectionName: "canvases",
+    }),
+  },
 };
 ```
 
 ### Custom Storage
 
 ```typescript
-import type { StorageAdapter } from '@derivative-canvas/core';
+import type { StorageAdapter } from "@derivative-canvas/core";
 
 const customStorageAdapter: StorageAdapter = {
-  saveCanvas: async (userId, canvasId, data) => { /* ... */ },
-  loadCanvas: async (userId, canvasId) => { /* ... */ },
-  listCanvases: async (userId) => { /* ... */ },
-  deleteCanvas: async (userId, canvasId) => { /* ... */ },
-  shareCanvas: async (userId, canvasId, permissions) => { /* ... */ }
+  saveCanvas: async (userId, canvasId, data) => {
+    /* ... */
+  },
+  loadCanvas: async (userId, canvasId) => {
+    /* ... */
+  },
+  listCanvases: async (userId) => {
+    /* ... */
+  },
+  deleteCanvas: async (userId, canvasId) => {
+    /* ... */
+  },
+  shareCanvas: async (userId, canvasId, permissions) => {
+    /* ... */
+  },
 };
 ```
 
@@ -249,18 +268,25 @@ Here's how Derivative Canvas integrates into the HelloConvo project:
 
 ```typescript
 // app/board/[boardId]/canvas/page.tsx
-import { DerivativeCanvasLayout } from '@derivative-canvas/core';
-import { AIChatPlugin } from '@derivative-canvas/core/plugins';
-import { BoardDetails } from '@/components/BoardDetails';
+import { DerivativeCanvasLayout } from "@derivative-canvas/core";
+import { AIChatPlugin } from "@derivative-canvas/core/plugins";
+import { BoardDetails } from "@/components/BoardDetails";
 
-export default function BoardCanvasPage({ params }: { params: { boardId: string } }) {
+export default function BoardCanvasPage({
+  params,
+}: {
+  params: { boardId: string };
+}) {
   return (
     <DerivativeCanvasLayout
       layoutType="hybrid"
       canvasId={params.boardId}
       onViewToggle={(view) => {
         // Analytics or state management
-        analytics.track('board_view_changed', { view, boardId: params.boardId });
+        analytics.track("board_view_changed", {
+          view,
+          boardId: params.boardId,
+        });
       }}
     >
       {/* Traditional board view */}
@@ -275,32 +301,32 @@ export default function BoardCanvasPage({ params }: { params: { boardId: string 
 ### Canvas Operations API
 
 ```typescript
-import { useDerivativeCanvas } from '@derivative-canvas/core';
+import { useDerivativeCanvas } from "@derivative-canvas/core";
 
 function MyComponent() {
   const { api } = useDerivativeCanvas();
 
   const handleAddElement = () => {
     api.addElement({
-      type: 'rectangle',
+      type: "rectangle",
       x: 100,
       y: 100,
       width: 200,
-      height: 100
+      height: 100,
     });
   };
 
   const handleSaveCanvas = async () => {
-    const canvasId = await api.saveCanvas('My Canvas');
-    console.log('Saved with ID:', canvasId);
+    const canvasId = await api.saveCanvas("My Canvas");
+    console.log("Saved with ID:", canvasId);
   };
 
   const handleShareCanvas = async () => {
     const shareUrl = await api.shareCanvas({
-      type: 'edit',
-      public: true
+      type: "edit",
+      public: true,
     });
-    console.log('Share URL:', shareUrl);
+    console.log("Share URL:", shareUrl);
   };
 }
 ```
@@ -308,20 +334,20 @@ function MyComponent() {
 ### Event System
 
 ```typescript
-import { useDerivativeCanvas } from '@derivative-canvas/core';
+import { useDerivativeCanvas } from "@derivative-canvas/core";
 
 function MyComponent() {
   const { api } = useDerivativeCanvas();
 
   useEffect(() => {
     const handleElementsChanged = (elements) => {
-      console.log('Canvas elements changed:', elements);
+      console.log("Canvas elements changed:", elements);
     };
 
-    api.on('elements:changed', handleElementsChanged);
+    api.on("elements:changed", handleElementsChanged);
 
     return () => {
-      api.off('elements:changed', handleElementsChanged);
+      api.off("elements:changed", handleElementsChanged);
     };
   }, [api]);
 }
